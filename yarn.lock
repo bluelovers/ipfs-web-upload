@@ -948,10 +948,10 @@
     bluebird "^3"
     fast-glob "^3"
 
-"@bluelovers/ipfs-http-client@^1.0.21":
-  version "1.0.21"
-  resolved "https://registry.npmjs.org/@bluelovers/ipfs-http-client/-/ipfs-http-client-1.0.21.tgz#1fc6c355454918a3f8cee858f73c932f4e404a16"
-  integrity sha512-wHf/vntzA66reixAd3o7HTPQixr9GQUxqObq7tq9pU1hdf3IAzXlW/Lr2mkia41kTCk4Ub3e6KleO3qz1dwV6w==
+"@bluelovers/ipfs-http-client@^1.0.22":
+  version "1.0.22"
+  resolved "https://registry.npmjs.org/@bluelovers/ipfs-http-client/-/ipfs-http-client-1.0.22.tgz#cb9024ed094dd7a83177dee087621bc2940e521f"
+  integrity sha512-/4KLdgcR3Hju44vvvCzDO+Zm01igMrXvVY0WNU5k6TZ/td4/n2L18/gVDigaVabfY0r7a+K/YiNo3tqEmwLj5w==
   dependencies:
     ipfs-env "^1.0.1"
     ipfs-types "^1.0.13"
@@ -2411,12 +2411,12 @@ fastq@^1.6.0:
   dependencies:
     reusify "^1.0.4"
 
-fetch-ipfs@^1.0.25:
-  version "1.0.25"
-  resolved "https://registry.npmjs.org/fetch-ipfs/-/fetch-ipfs-1.0.25.tgz#bffc4ce1233a7496e290c35139455baf44c8b0d9"
-  integrity sha512-VGT5SnpjsxYN9+ZKm7xVfSa+q7W8+ZwKwykRSPH6hLvOwngTmq8ycjEXkK154MbyARTcLOA3TCgTOBsQyYlqVw==
+fetch-ipfs@^1.0.26:
+  version "1.0.26"
+  resolved "https://registry.npmjs.org/fetch-ipfs/-/fetch-ipfs-1.0.26.tgz#b50f71a089c51c2713396e368d6ebca1d7c99183"
+  integrity sha512-RhOvDZ3TrsgmeGCXnZVv6ocmzff42qOREURziIuzrMfMzVKpR0Zt+PmwJcgVqah4bzY294c98cqBFPzXy74llw==
   dependencies:
-    "@bluelovers/ipfs-http-client" "^1.0.21"
+    "@bluelovers/ipfs-http-client" "^1.0.22"
     abort-controller "^3.0.0"
     array-hyper-unique "^1.1.0"
     bluebird "^3.7.2"

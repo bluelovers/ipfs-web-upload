@@ -78,20 +78,18 @@ export default (props: PropsWithChildren<{}>) =>
 	const [ipfs, setIpfs] = useState(null as IIPFSFileApi);
 	const [disabledUpload, setDisabledUpload] = useState(1);
 
-	const serverList = filterList('API')
-		.map((item: IIPFSAddressesLike['API']) =>
-		{
-			// @ts-ignore
-			item.hostname = 'localhost';
-			return item;
-		}) as IIPFSAddressesLike['API'][]
-	;
+	const serverList = filterList('API');
 
 	useEffect(() =>
 	{
 
 		findIpfsClient([
-			...getDefaultServerList(),
+			...getDefaultServerList()
+				.map(url =>
+				{
+					return url;
+				})
+			,
 			...serverList,
 		], {
 			clientArgvs: [],
