@@ -239,6 +239,7 @@ export default ({
 	};
 
 	const [files, setFiles] = useState([]);
+	const [currentProgress, setCurrentProgress] = useState(0);
 
 	useEffect(() =>
 	{
@@ -249,42 +250,71 @@ export default ({
 	{
 		if (acceptedFiles.length && ipfs)
 		{
-			setDisabledUpload(2)
+			setDisabledUpload(2);
+			setCurrentProgress(0);
+			// @ts-ignore
+			rootRef.current.noDrag = true;
 
-			const streams = await Bluebird
-				.resolve(acceptedFiles)
-				.map(async (file: FileWithPath) =>
-				{
-					const ai = async function* (): AsyncGenerator<Buffer, void, unknown>
+			const chunkSize = 1024 * 1024;
+
+			const createStreams = async () => {
+
+				let totalSize = 0;
+
+				const streams = await Bluebird
+					.resolve(acceptedFiles)
+					.map(async (file: FileWithPath) =>
 					{
-						const reader = new FileReader(file);
-						const chunkSize = 1024 * 1024;
-						let chunk;
-						do
+
+						totalSize += file.size;
+
+						const ai = async function* (): AsyncGenerator<Buffer, void, unknown>
 						{
-							console.log(file.path, chunk)
-							chunk = await reader.readAsArrayBuffer(chunkSize);
+							const reader = new FileReader(file);
 
-							yield chunk
+							let chunk;
+							do
+							{
+								//console.log(file.path, chunk)
+								chunk = await reader.readAsArrayBuffer(chunkSize);
+
+								yield chunk
+							}
+							while (chunk.byteLength > 0);
+						};
+
+						return {
+							path: file.path,
+							content: ai(),
+							size: file.size,
 						}
-						while (chunk.byteLength > 0);
-					};
+					})
+				;
 
-					return {
-						path: file.path,
-						content: ai(),
-						size: file.size,
-					}
-				})
-			;
+				return {
+					streams,
+					totalSize,
+				}
+			}
+
+			let { streams, totalSize } = await createStreams();
+
+			const updateProgress = (sent) => {
+
+				let currentProgress = sent / totalSize * 100;
+				setCurrentProgress(currentProgress);
+				console.log(currentProgress)
+			}
 
 			await publishToIPFSRace(streams, [
+				//...serverList,
 				ipfs,
-				...serverList,
 			], {
 				addOptions: {
 					wrapWithDirectory: true,
+					progress: updateProgress,
 				},
+				timeout: 60 * 60 * 1000,
 			})
 				.then(async (result) =>
 				{
@@ -307,7 +337,7 @@ export default ({
 
 						i++;
 
-						console.log(cid)
+						//console.log(cid)
 					}
 
 					setFiles(updateFiles(acceptedFiles, cid))
@@ -333,8 +363,12 @@ export default ({
 					margin: 10,
 				}}>
 					{
-						(0 && isDragActive) ?
-							<p>Drop the files here ...</p> :
+						(disabledUpload === 2) ?
+							<p
+								style={{
+									color: '#4DA400',
+								}}
+							>{currentProgress}%</p> :
 							<p>將檔案拖放到此處，或單擊以選擇檔案</p>
 					}
 					<p
@@ -390,6 +424,18 @@ export default ({
 					href={toIpfsLink(lastCid)}
 					target="_blank"
 				>{toIpfsLink(lastCid)}</a> : undefined}
+			</div>
+
+			<div>
+				<p>安裝以下工具 可加速上傳/下載</p>
+				<p><a style={{
+					color: '#70b1e6',
+				}} href={'https://github.com/ipfs-shipyard/ipfs-desktop'} target="_blank">IPFS Desktop</a> - 備用載點 <a style={{
+					color: '#70b1e6',
+				}} href={'https://ipfs.io/ipfs/QmNdkGvnFv84NMkQQzJiT9cdkVhdE6iBMyaajFjPUe2rU2?filename=IPFS-Desktop-Setup-0.10.4.exe'} target="_blank">windows</a></p>
+				<p><a style={{
+					color: '#70b1e6',
+				}} href={'https://github.com/ipfs-shipyard/ipfs-companion#ipfs-companion'} target="_blank">IPFS Companion</a></p>
 			</div>
 
 			<aside>
