@@ -323,7 +323,7 @@ export default ({
 
 	return (
 		<section className="container">
-			<div style={style as any} onClick={() => dropzoneRef.current.open()}>
+			<div style={style as any} onClick={() => !disabledUpload && dropzoneRef.current.open()}>
 				<input {...getInputProps()} />
 				<div style={{
 					alignItems: 'center',
