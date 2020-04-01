@@ -134,9 +134,19 @@ export default (props: PropsWithChildren<{}>) =>
 			}
 
 			return (
-				<li key={file.path}>
+				<li
+					key={file.path}
+					style={{
+						marginBottom: 5,
+					}}
+				>
 					<div>
-						{file.path} - {file.size} bytes
+						<span
+							style={{
+								wordBreak: 'break-all',
+								wordWrap: 'break-word',
+							}}
+						>{file.path}</span> - {file.size} bytes
 						{file.cid ? <div style={{
 							paddingTop: 5,
 							paddingBottom: 5,
@@ -302,6 +312,14 @@ export default (props: PropsWithChildren<{}>) =>
 					style={{
 						padding: 5,
 						color: '#ff008c',
+
+						borderWidth: 2,
+						borderRadius: 2,
+						borderColor: '#ff008c',
+						borderStyle: 'dashed',
+
+						wordBreak: 'break-all',
+						wordWrap: 'break-word',
 					}}
 					href={toIpfsLink(lastCid)}
 					target="_blank"

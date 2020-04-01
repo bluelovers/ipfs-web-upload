@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import MyDropzone from '../src/component/MyDropzone';
+import React from 'react';
 
 const Home = () => (
 	<div className="container">
@@ -9,8 +10,30 @@ const Home = () => (
 		</Head>
 
 		<main>
-			<h1 className="title">
-				IPFS Uploader
+
+			<img
+				src="https://ipfs.io/ipfs/QmdPAhQRxrDKqkGPvQzBvjYe3kU8kiEEAd2J6ETEamKAD9"
+				alt="IPFS Logo"
+				width="720"
+				style={{
+					maxWidth: '100%',
+					display: 'block',
+				}}
+			/>
+
+			<h1
+				className="title"
+				style={{
+					color: '#6acad1',
+				}}
+			>
+				<a
+					style={{
+						color: 'inherit',
+						textDecoration: 'none',
+					}}
+					href={'https://ipfs-web-upload.now.sh/'}
+				>IPFS Uploader</a>
 			</h1>
 
 			<p className="description">
@@ -23,15 +46,21 @@ const Home = () => (
 
 		<footer>
 			<a
-				href="https://zeit.co?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+				href="https://github.com/bluelovers/ipfs-web-upload"
 				target="_blank"
 				rel="noopener noreferrer"
 			>
-				Powered by <img src="/zeit.svg" alt="ZEIT Logo" />
+				Powered by&nbsp;<b>ipfs-web-upload</b>
 			</a>
 		</footer>
 
 		<style jsx>{`
+		
+		.ipfs_logo
+		{
+		filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+		}
+		
       .container {
         min-height: 100vh;
         padding: 0 0.5rem;
