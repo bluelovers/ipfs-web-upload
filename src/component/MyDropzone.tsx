@@ -213,7 +213,7 @@ export default ({
 							{
 								(urls.length ? urls.map((url, i) =>
 								{
-									return (<>
+									return (<span key={url}>
 									{i ? (<span
 											style={{
 												marginLeft: 5,
@@ -227,7 +227,7 @@ export default ({
 											href={url}
 											target="_blank"
 										>LINK {1 + i}</a>
-									</>)
+									</span>)
 								}) : undefined)
 							}
 
@@ -255,13 +255,14 @@ export default ({
 				.resolve(acceptedFiles)
 				.map(async (file: FileWithPath) =>
 				{
-					const ai = async function* ()
+					const ai = async function* (): AsyncGenerator<Buffer, void, unknown>
 					{
 						const reader = new FileReader(file);
-						const chunkSize = 8;
+						const chunkSize = 1024 * 1024;
 						let chunk;
 						do
 						{
+							console.log(file.path, chunk)
 							chunk = await reader.readAsArrayBuffer(chunkSize);
 
 							yield chunk
