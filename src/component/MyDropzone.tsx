@@ -3,11 +3,9 @@ import Dropzone, { useDropzone, DropEvent, FileWithPath } from 'react-dropzone';
 import ipfsClient, { findIpfsClient } from '@bluelovers/ipfs-http-client';
 import { filesToStreams } from 'ipfs-browser-util';
 import { getDefaultServerList } from '@bluelovers/ipfs-http-client/core';
-import { filterList } from 'ipfs-server-list';
+import { filterList, IIPFSAddressesLike } from 'ipfs-server-list';
 import { IIPFSFileApi } from 'ipfs-types/lib/ipfs/file';
 import Bluebird from 'bluebird';
-import pullStream from 'pull-stream';
-import fileReaderStream from 'filereader-stream';
 import FileReader from '@tanker/file-reader';
 import publishToIPFSRace from 'fetch-ipfs/put';
 import { toLink as toIpfsLink, toURL as toIpfsURL } from 'to-ipfs-url';
@@ -80,12 +78,21 @@ export default (props: PropsWithChildren<{}>) =>
 	const [ipfs, setIpfs] = useState(null as IIPFSFileApi);
 	const [disabledUpload, setDisabledUpload] = useState(1);
 
+	const serverList = filterList('API')
+		.map((item: IIPFSAddressesLike['API']) =>
+		{
+			// @ts-ignore
+			item.hostname = 'localhost';
+			return item;
+		}) as IIPFSAddressesLike['API'][]
+	;
+
 	useEffect(() =>
 	{
 
 		findIpfsClient([
 			...getDefaultServerList(),
-			...filterList('API'),
+			...serverList,
 		], {
 			clientArgvs: [],
 		})
@@ -152,12 +159,12 @@ export default (props: PropsWithChildren<{}>) =>
 							paddingBottom: 5,
 						}}>
 							<a
-							style={{
-								color: '#4DA400',
-							}}
-							href={url1.href}
-							target="_blank"
-						>LINK 1</a>
+								style={{
+									color: '#4DA400',
+								}}
+								href={url1.href}
+								target="_blank"
+							>LINK 1</a>
 							<span
 								style={{
 									marginLeft: 5,
@@ -219,7 +226,7 @@ export default (props: PropsWithChildren<{}>) =>
 
 			await publishToIPFSRace(streams, [
 				ipfs,
-				...filterList('API'),
+				...serverList,
 			], {
 				addOptions: {
 					wrapWithDirectory: true,
@@ -255,7 +262,8 @@ export default (props: PropsWithChildren<{}>) =>
 	};
 
 	const doUpload = () => doUploadCore()
-		.finally(() => {
+		.finally(() =>
+		{
 			setDisabledUpload(0)
 		})
 	;
@@ -274,15 +282,15 @@ export default (props: PropsWithChildren<{}>) =>
 					margin: 10,
 				}}>
 					{
-					(0 && isDragActive) ?
-						<p>Drop the files here ...</p> :
-						<p>將檔案拖放到此處，或單擊以選擇檔案</p>
-				}
-				<p
-					style={{
-						color: 'red',
-					}}
-				>請注意：一旦上傳完成後，您便無法主動刪除檔案</p>
+						(0 && isDragActive) ?
+							<p>Drop the files here ...</p> :
+							<p>將檔案拖放到此處，或單擊以選擇檔案</p>
+					}
+					<p
+						style={{
+							color: 'red',
+						}}
+					>請注意：一旦上傳完成後，您便無法主動刪除檔案</p>
 				</div>
 			</div>
 
