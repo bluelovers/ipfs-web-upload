@@ -255,7 +255,7 @@ export default ({
 			// @ts-ignore
 			rootRef.current.noDrag = true;
 
-			const chunkSize = 1024 * 1024;
+			const chunkSize = 1024 * 1024 / 2;
 
 			const createStreams = async () => {
 
@@ -302,7 +302,7 @@ export default ({
 			const updateProgress = (sent) => {
 
 				let currentProgress = sent / totalSize * 100;
-				setCurrentProgress(currentProgress);
+				currentProgress && setCurrentProgress(() => currentProgress);
 				console.log(currentProgress)
 			}
 
@@ -414,7 +414,9 @@ export default ({
 					wordWrap: 'break-word',
 				}}
 			>
-				{lastCid ? <a
+				{lastCid ? (<>
+
+					<p><a
 					style={{
 						color: '#ff008c',
 
@@ -423,7 +425,47 @@ export default ({
 					}}
 					href={toIpfsLink(lastCid)}
 					target="_blank"
-				>{toIpfsLink(lastCid)}</a> : undefined}
+					>{toIpfsLink(lastCid)}</a></p>
+
+					<p><a
+						style={{
+							color: '#ff008c',
+
+							wordBreak: 'break-all',
+							wordWrap: 'break-word',
+						}}
+						href={toIpfsLink(lastCid, {
+							prefix: {
+								ipfs: ipfsServerList['infura.io'].Gateway,
+							},
+						})}
+						target="_blank"
+					>{toIpfsLink(lastCid, {
+						prefix: {
+							ipfs: ipfsServerList['infura.io'].Gateway,
+						},
+					})}</a></p>
+
+					<p><a
+						style={{
+							color: '#ff008c',
+
+							wordBreak: 'break-all',
+							wordWrap: 'break-word',
+						}}
+						href={toIpfsLink(lastCid, {
+							prefix: {
+								ipfs: ipfsServerList.cloudflare.Gateway,
+							},
+						})}
+						target="_blank"
+					>{toIpfsLink(lastCid, {
+						prefix: {
+							ipfs: ipfsServerList.cloudflare.Gateway,
+						},
+					})}</a></p>
+
+				</>) : undefined}
 			</div>
 
 			<div>
