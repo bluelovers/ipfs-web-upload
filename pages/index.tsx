@@ -1,60 +1,69 @@
 import Head from 'next/head'
 import MyDropzone from '../src/component/MyDropzone';
-import React from 'react';
+import React, { createRef } from 'react';
+import Dropzone, { useDropzone, DropEvent, FileWithPath, DropzoneState, DropzoneRef } from 'react-dropzone';
 
-const Home = () => (
-	<div className="container">
-		<Head>
-			<title>IPFS Uploader</title>
-			<link rel="icon" href="/favicon.ico" />
-		</Head>
+const Home = () =>
+{
+	const dropzoneRef = createRef<DropzoneRef>()
 
-		<main>
+	return (
+		<div className="container">
+			<Head>
+				<title>IPFS Uploader</title>
+				<link rel="icon" href="/favicon.ico" />
+			</Head>
 
-			<img
-				src="https://ipfs.io/ipfs/QmdPAhQRxrDKqkGPvQzBvjYe3kU8kiEEAd2J6ETEamKAD9"
-				alt="IPFS Logo"
-				width="720"
-				style={{
-					maxWidth: '100%',
-					display: 'block',
-				}}
-			/>
+			<Dropzone ref={dropzoneRef} noClick>
+				{(propDropzoneState) => (
+					<main className="dropzoneBody" {...propDropzoneState.getRootProps()}>
 
-			<h1
-				className="title"
-				style={{
-					color: '#6acad1',
-				}}
-			>
+						<img
+							src="https://ipfs.io/ipfs/QmdPAhQRxrDKqkGPvQzBvjYe3kU8kiEEAd2J6ETEamKAD9"
+							alt="IPFS Logo"
+							width="720"
+							style={{
+								maxWidth: '100%',
+								display: 'block',
+							}}
+						/>
+
+						<h1
+							className="title"
+							style={{
+								color: '#6acad1',
+							}}
+						>
+							<a
+								style={{
+									color: 'inherit',
+									textDecoration: 'none',
+								}}
+								href={'https://ipfs-web-upload.now.sh/'}
+							>IPFS Uploader</a>
+						</h1>
+
+						<p className="description">
+							免費將您的檔案上傳至 IPFS 網路
+						</p>
+
+						<MyDropzone {...propDropzoneState} dropzoneRef={dropzoneRef} />
+
+					</main>
+				)}
+			</Dropzone>
+
+			<footer>
 				<a
-					style={{
-						color: 'inherit',
-						textDecoration: 'none',
-					}}
-					href={'https://ipfs-web-upload.now.sh/'}
-				>IPFS Uploader</a>
-			</h1>
+					href="https://github.com/bluelovers/ipfs-web-upload"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Powered by&nbsp;<b>ipfs-web-upload</b>
+				</a>
+			</footer>
 
-			<p className="description">
-				免費將您的檔案上傳至 IPFS 網路
-			</p>
-
-			<MyDropzone/>
-
-		</main>
-
-		<footer>
-			<a
-				href="https://github.com/bluelovers/ipfs-web-upload"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				Powered by&nbsp;<b>ipfs-web-upload</b>
-			</a>
-		</footer>
-
-		<style jsx>{`
+			<style jsx>{`
 		
 		.ipfs_logo
 		{
@@ -185,9 +194,14 @@ const Home = () => (
           flex-direction: column;
         }
       }
+      
+      .dropzoneBody:focus
+      {
+      outline: transparent auto 0px;
+      }
     `}</style>
 
-		<style jsx global>{`
+			<style jsx global>{`
       html,
       body, :root {
       background-color: #23272b;
@@ -202,8 +216,14 @@ const Home = () => (
       * {
         box-sizing: border-box;
       }
+      
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
     `}</style>
-	</div>
-)
+		</div>
+	)
+}
 
 export default Home

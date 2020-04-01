@@ -1,14 +1,15 @@
-import React, { PropsWithChildren, ReactNode, useMemo, useState, useEffect } from 'react';
-import Dropzone, { useDropzone, DropEvent, FileWithPath } from 'react-dropzone';
+import React, { PropsWithChildren, ReactNode, useMemo, useState, useEffect, RefObject } from 'react';
+import Dropzone, { useDropzone, DropEvent, FileWithPath, DropzoneState, DropzoneRef } from 'react-dropzone';
 import ipfsClient, { findIpfsClient } from '@bluelovers/ipfs-http-client';
 import { filesToStreams } from 'ipfs-browser-util';
 import { getDefaultServerList } from '@bluelovers/ipfs-http-client/core';
-import { filterList, IIPFSAddressesLike } from 'ipfs-server-list';
+import { filterList, IIPFSAddressesLike, ipfsServerList } from 'ipfs-server-list';
 import { IIPFSFileApi } from 'ipfs-types/lib/ipfs/file';
 import Bluebird from 'bluebird';
 import FileReader from '@tanker/file-reader';
 import publishToIPFSRace from 'fetch-ipfs/put';
 import { toLink as toIpfsLink, toURL as toIpfsURL } from 'to-ipfs-url';
+import { array_unique_overwrite } from 'array-hyper-unique';
 
 async function myCustomFileGetter(event: DropEvent)
 {
@@ -33,8 +34,8 @@ const baseStyle = {
 	flexDirection: 'column',
 	alignItems: 'center',
 	padding: '20px',
-	borderWidth: 2,
-	borderRadius: 2,
+	borderWidth: 10,
+	borderRadius: 5,
 	borderColor: '#eeeeee',
 	borderStyle: 'dashed',
 	backgroundColor: '#fafafa',
@@ -55,8 +56,32 @@ const rejectStyle = {
 	borderColor: '#ff1744',
 };
 
-export default (props: PropsWithChildren<{}>) =>
+const uploadingStyle = {
+	borderColor: '#ff008c',
+};
+
+export default ({
+
+	dropzoneRef,
+
+	acceptedFiles,
+	getRootProps,
+	getInputProps,
+	isDragActive,
+	isDragAccept,
+	isDragReject,
+
+	isFileDialogActive,
+	isFocused,
+
+	rootRef, // Ref to the `<div>`
+	inputRef, // Ref to the `<input>`
+
+}: DropzoneState & {
+	dropzoneRef: RefObject<DropzoneRef>,
+}) =>
 {
+	/*
 	const {
 		acceptedFiles,
 		getRootProps,
@@ -74,6 +99,7 @@ export default (props: PropsWithChildren<{}>) =>
 	} = useDropzone({
 		//getFilesFromEvent: event => myCustomFileGetter(event),
 	});
+	 */
 
 	const [ipfs, setIpfs] = useState(null as IIPFSFileApi);
 	const [disabledUpload, setDisabledUpload] = useState(1);
@@ -108,12 +134,14 @@ export default (props: PropsWithChildren<{}>) =>
 		...((isDragActive || isFocused) ? activeStyle : {}),
 		...((isDragAccept || isFileDialogActive) ? acceptStyle : {}),
 		...(isDragReject ? rejectStyle : {}),
+		...(disabledUpload === 2 ? uploadingStyle : {}),
 	}), [
 		isDragActive,
 		isDragAccept,
 		isDragReject,
 		isFocused,
 		isFileDialogActive,
+		disabledUpload,
 	]);
 
 	const [lastCid, setLastCid] = useState<string>();
@@ -127,15 +155,41 @@ export default (props: PropsWithChildren<{}>) =>
 			cid?: string,
 		}) =>
 		{
-			let url1: URL;
-			let url2: URL;
+
+			const urls: string[] = [];
 
 			if (file.cid)
 			{
+				let url1: URL;
+				let url2: URL;
+
 				url1 = toIpfsURL(file.cid)
 				url2 = toIpfsURL(file.cid)
 
-				url2.searchParams.set('filename', file.name);
+				url1.searchParams.set('filename', file.name);
+
+				urls.push(url1.href);
+				urls.push(url2.href);
+
+				urls.push(toIpfsURL(file.cid, {
+					prefix: {
+						ipfs: ipfsServerList.ipfs.Gateway,
+					},
+				}).href);
+
+				urls.push(toIpfsURL(file.cid, {
+					prefix: {
+						ipfs: ipfsServerList['infura.io'].Gateway,
+					},
+				}).href);
+
+				urls.push(toIpfsURL(file.cid, {
+					prefix: {
+						ipfs: ipfsServerList.cloudflare.Gateway,
+					},
+				}).href);
+
+				array_unique_overwrite(urls)
 			}
 
 			return (
@@ -156,26 +210,27 @@ export default (props: PropsWithChildren<{}>) =>
 							paddingTop: 5,
 							paddingBottom: 5,
 						}}>
-							<a
-								style={{
-									color: '#4DA400',
-								}}
-								href={url1.href}
-								target="_blank"
-							>LINK 1</a>
-							<span
-								style={{
-									marginLeft: 5,
-									marginRight: 5,
-								}}
-							>|</span>
-							<a
-								style={{
-									color: '#4DA400',
-								}}
-								href={url2.href}
-								target="_blank"
-							>LINK 2</a>
+							{
+								(urls.length ? urls.map((url, i) =>
+								{
+									return (<>
+									{i ? (<span
+											style={{
+												marginLeft: 5,
+												marginRight: 5,
+											}}
+										>|</span>) : undefined}
+										<a
+											style={{
+												color: '#4DA400',
+											}}
+											href={url}
+											target="_blank"
+										>LINK {1 + i}</a>
+									</>)
+								}) : undefined)
+							}
+
 						</div> : undefined}
 					</div>
 				</li>
@@ -268,10 +323,7 @@ export default (props: PropsWithChildren<{}>) =>
 
 	return (
 		<section className="container">
-			<div {...getRootProps({
-				// @ts-ignore
-				style,
-			})}>
+			<div style={style as any} onClick={() => dropzoneRef.current.open()}>
 				<input {...getInputProps()} />
 				<div style={{
 					alignItems: 'center',
@@ -313,16 +365,23 @@ export default (props: PropsWithChildren<{}>) =>
 				</button>
 			</div>
 
-			<aside>
+			<div
+				style={{
+					padding: 10,
+					color: '#ff008c',
+
+					borderWidth: 2,
+					borderRadius: 2,
+					borderColor: '#ff008c',
+					borderStyle: 'dashed',
+
+					wordBreak: 'break-all',
+					wordWrap: 'break-word',
+				}}
+			>
 				{lastCid ? <a
 					style={{
-						padding: 5,
 						color: '#ff008c',
-
-						borderWidth: 2,
-						borderRadius: 2,
-						borderColor: '#ff008c',
-						borderStyle: 'dashed',
 
 						wordBreak: 'break-all',
 						wordWrap: 'break-word',
@@ -330,7 +389,7 @@ export default (props: PropsWithChildren<{}>) =>
 					href={toIpfsLink(lastCid)}
 					target="_blank"
 				>{toIpfsLink(lastCid)}</a> : undefined}
-			</aside>
+			</div>
 
 			<aside>
 				<h4>檔案列表</h4>
