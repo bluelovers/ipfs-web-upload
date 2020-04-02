@@ -10,23 +10,11 @@ import FileReader from '@tanker/file-reader';
 import publishToIPFSRace from 'fetch-ipfs/put';
 import { toLink as toIpfsLink, toURL as toIpfsURL } from 'to-ipfs-url';
 import { array_unique_overwrite } from 'array-hyper-unique';
-
-async function myCustomFileGetter(event: DropEvent)
-{
-	const files: FileWithPath[] = [];
-	// @ts-ignore
-	const fileList: FileList = event.dataTransfer ? event.dataTransfer.files : event.target.files;
-
-	const len = fileList.length;
-
-	for (let i = 0; i < len; i++)
-	{
-		const file = fileList.item(i);
-		files.push(file);
-	}
-
-	return files;
-}
+import prettyBytes from 'pretty-bytes';
+import { ipfsGatewayAddressesLink } from 'ipfs-util-lib/lib/api/multiaddr';
+import MainCid from './MyDropzone/MainCid';
+import MyFileList, { IFileWithPathWithCid } from './MyDropzone/MyFileList';
+import PanelTools from './PanelTools';
 
 const baseStyle = {
 	flex: 1,
@@ -119,6 +107,8 @@ export default ({
 //			{
 //				url: `https://cors-anywhere.herokuapp.com/https://ipfs.infura.io:5001/api/v0/`,
 //			} as any,
+			// @ts-ignore
+			typeof window !== 'undefined' ? window.ipfs : void 0,
 			...serverList,
 		], {
 			clientArgvs: [],
@@ -131,6 +121,38 @@ export default ({
 		;
 
 	}, []);
+
+	const [ipfsGatewayList, setIpfsGatewayList] = useState([] as string[]);
+	const [ipfsGatewayMain, setIpfsGatewayMain] = useState(null as string);
+
+	useEffect(() =>
+	{
+
+		(async () => {
+			const ipfsGatewayList: string[] = [];
+
+			await ipfsGatewayAddressesLink(ipfs)
+				.then(gateway => {
+					ipfsGatewayList.push(gateway);
+
+					setIpfsGatewayMain(() => gateway)
+				})
+				.catch(e => null)
+			;
+
+			filterList('Gateway')
+				.forEach(gateway => {
+					ipfsGatewayList.push(gateway);
+				})
+			;
+
+			array_unique_overwrite(ipfsGatewayList);
+
+			setIpfsGatewayList(() => ipfsGatewayList)
+
+		})();
+
+	}, [ipfs])
 
 	const style = useMemo(() => ({
 		...baseStyle,
@@ -146,108 +168,24 @@ export default ({
 
 	const [lastCid, setLastCid] = useState<string>();
 
-	const updateFiles = (acceptedFiles, cid?) =>
-	{
-
-		setLastCid(cid)
-
-		return acceptedFiles.map((file: FileWithPath & {
-			cid?: string,
-		}) =>
-		{
-
-			const urls: string[] = [];
-
-			if (file.cid)
-			{
-				let url1: URL;
-				let url2: URL;
-
-				url1 = toIpfsURL(file.cid)
-				url2 = toIpfsURL(file.cid)
-
-				url1.searchParams.set('filename', file.name);
-
-				urls.push(url1.href);
-				urls.push(url2.href);
-
-				urls.push(toIpfsURL(file.cid, {
-					prefix: {
-						ipfs: ipfsServerList.ipfs.Gateway,
-					},
-				}).href);
-
-				urls.push(toIpfsURL(file.cid, {
-					prefix: {
-						ipfs: ipfsServerList['infura.io'].Gateway,
-					},
-				}).href);
-
-				urls.push(toIpfsURL(file.cid, {
-					prefix: {
-						ipfs: ipfsServerList.cloudflare.Gateway,
-					},
-				}).href);
-
-				array_unique_overwrite(urls)
-			}
-
-			return (
-				<li
-					key={file.path}
-					style={{
-						marginBottom: 5,
-					}}
-				>
-					<div>
-						<span
-							style={{
-								wordBreak: 'break-all',
-								wordWrap: 'break-word',
-							}}
-						>{file.path}</span> - {file.size} bytes
-						{file.cid ? <div style={{
-							paddingTop: 5,
-							paddingBottom: 5,
-						}}>
-							{
-								(urls.length ? urls.map((url, i) =>
-								{
-									return (<span key={url}>
-									{i ? (<span
-											style={{
-												marginLeft: 5,
-												marginRight: 5,
-											}}
-										>|</span>) : undefined}
-										<a
-											style={{
-												color: '#4DA400',
-											}}
-											href={url}
-											target="_blank"
-										>LINK {1 + i}</a>
-									</span>)
-								}) : undefined)
-							}
-
-						</div> : undefined}
-					</div>
-				</li>
-			)
-		})
-	};
-
-	const [files, setFiles] = useState([]);
+	const [files, setFiles] = useState([] as IFileWithPathWithCid[]);
 	const [currentProgress, setCurrentProgress] = useState(0);
 
 	useEffect(() =>
 	{
-		setFiles(updateFiles(acceptedFiles))
+		/**
+		 * 正在上傳檔案的時候 不允許新增檔案
+		 */
+		if (disabledUpload !== 2)
+		{
+			setFiles(acceptedFiles)
+		}
 	}, [acceptedFiles]);
 
 	const doUploadCore = async () =>
 	{
+		let acceptedFiles = files;
+
 		if (acceptedFiles.length && ipfs)
 		{
 			setDisabledUpload(2);
@@ -342,7 +280,8 @@ export default ({
 						//console.log(cid)
 					}
 
-					setFiles(updateFiles(acceptedFiles, cid))
+					setLastCid(cid)
+					setFiles(acceptedFiles)
 				})
 		}
 	};
@@ -355,7 +294,14 @@ export default ({
 	;
 
 	return (
-		<section className="container">
+		<section
+			className="container"
+			style={{
+				width: 720,
+				maxWidth: '100%',
+				padding: 20,
+			}}
+		>
 			<div style={style as any} onClick={() => !disabledUpload && dropzoneRef.current.open()}>
 				<input {...getInputProps()} />
 				<div style={{
@@ -402,90 +348,19 @@ export default ({
 				</button>
 			</div>
 
-			<div
-				style={{
-					padding: 10,
-					color: '#ff008c',
+			<MainCid lastCid={lastCid} ipfsGatewayList={ipfsGatewayList}/>
 
-					borderWidth: 2,
-					borderRadius: 2,
-					borderColor: '#ff008c',
-					borderStyle: 'dashed',
-
-					wordBreak: 'break-all',
-					wordWrap: 'break-word',
-				}}
-			>
-				{lastCid ? (<>
-
-					<p><a
-					style={{
-						color: '#ff008c',
-
-						wordBreak: 'break-all',
-						wordWrap: 'break-word',
-					}}
-					href={toIpfsLink(lastCid)}
-					target="_blank"
-					>{toIpfsLink(lastCid)}</a></p>
-
-					<p><a
-						style={{
-							color: '#ff008c',
-
-							wordBreak: 'break-all',
-							wordWrap: 'break-word',
-						}}
-						href={toIpfsLink(lastCid, {
-							prefix: {
-								ipfs: ipfsServerList['infura.io'].Gateway,
-							},
-						})}
-						target="_blank"
-					>{toIpfsLink(lastCid, {
-						prefix: {
-							ipfs: ipfsServerList['infura.io'].Gateway,
-						},
-					})}</a></p>
-
-					<p><a
-						style={{
-							color: '#ff008c',
-
-							wordBreak: 'break-all',
-							wordWrap: 'break-word',
-						}}
-						href={toIpfsLink(lastCid, {
-							prefix: {
-								ipfs: ipfsServerList.cloudflare.Gateway,
-							},
-						})}
-						target="_blank"
-					>{toIpfsLink(lastCid, {
-						prefix: {
-							ipfs: ipfsServerList.cloudflare.Gateway,
-						},
-					})}</a></p>
-
-				</>) : undefined}
-			</div>
+			<PanelTools/>
 
 			<div>
-				<p>安裝以下工具 可加速上傳/下載</p>
-				<p><a style={{
-					color: '#70b1e6',
-				}} href={'https://github.com/ipfs-shipyard/ipfs-desktop'} target="_blank">IPFS Desktop</a> - 備用載點 <a style={{
-					color: '#70b1e6',
-				}} href={'https://ipfs.io/ipfs/QmNdkGvnFv84NMkQQzJiT9cdkVhdE6iBMyaajFjPUe2rU2?filename=IPFS-Desktop-Setup-0.10.4.exe'} target="_blank">windows</a></p>
-				<p><a style={{
-					color: '#70b1e6',
-				}} href={'https://github.com/ipfs-shipyard/ipfs-companion#ipfs-companion'} target="_blank">IPFS Companion</a></p>
+				<h4>檔案列表</h4>
+				<MyFileList
+					files={files}
+					ipfsGatewayMain={ipfsGatewayMain}
+					ipfsGatewayList={ipfsGatewayList}
+				/>
 			</div>
 
-			<aside>
-				<h4>檔案列表</h4>
-				<ul>{files}</ul>
-			</aside>
 			<style jsx>{`
 			aside { max-width: 300px; }
 			`}</style>

@@ -2,6 +2,7 @@ import Head from 'next/head'
 import MyDropzone from '../src/component/MyDropzone';
 import React, { createRef } from 'react';
 import Dropzone, { useDropzone, DropEvent, FileWithPath, DropzoneState, DropzoneRef } from 'react-dropzone';
+import ALink from '../src/component/ALink';
 
 const Home = () =>
 {
@@ -11,12 +12,19 @@ const Home = () =>
 		<div className="container">
 			<Head>
 				<title>IPFS Uploader</title>
-				<link rel="icon" href="/favicon.ico" />
+				<link rel="icon" href="./favicon.ico" />
 			</Head>
 
 			<Dropzone ref={dropzoneRef} noClick>
 				{(propDropzoneState) => (
-					<main className="dropzoneBody" {...propDropzoneState.getRootProps()}>
+					<main
+						className="dropzoneBody"
+						style={{
+							width: '100%',
+							maxWidth: '100%',
+						}}
+						{...propDropzoneState.getRootProps()}
+					>
 
 						<img
 							src="https://ipfs.io/ipfs/QmdPAhQRxrDKqkGPvQzBvjYe3kU8kiEEAd2J6ETEamKAD9"
@@ -34,17 +42,15 @@ const Home = () =>
 								color: '#6acad1',
 							}}
 						>
-							<a
-								style={{
-									color: 'inherit',
-									textDecoration: 'none',
-								}}
+							<ALink
 								href={'https://ipfs-web-upload.now.sh/'}
-							>IPFS Uploader</a>
+								title={'IPFS Uploader'}
+								target={'_self'}
+							>IPFS Uploader</ALink>
 						</h1>
 
 						<p className="description">
-							免費將您的檔案上傳至 IPFS 網路
+							無需註冊免費將您的檔案上傳至 IPFS 網路
 						</p>
 
 						<MyDropzone {...propDropzoneState} dropzoneRef={dropzoneRef} />
@@ -54,13 +60,12 @@ const Home = () =>
 			</Dropzone>
 
 			<footer>
-				<a
-					href="https://github.com/bluelovers/ipfs-web-upload"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Powered by&nbsp;<b>ipfs-web-upload</b>
-				</a>
+					Powered by&nbsp;<ALink
+				href="https://github.com/bluelovers/ipfs-web-upload"
+				rel="noopener noreferrer"
+			>
+				<b>ipfs-web-upload</b>
+			</ALink>
 			</footer>
 
 			<style jsx>{`
