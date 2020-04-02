@@ -116,6 +116,9 @@ export default ({
 					return url;
 				})
 			,
+//			{
+//				url: `https://cors-anywhere.herokuapp.com/https://ipfs.infura.io:5001/api/v0/`,
+//			} as any,
 			...serverList,
 		], {
 			clientArgvs: [],
@@ -138,9 +141,6 @@ export default ({
 	}), [
 		isDragActive,
 		isDragAccept,
-		isDragReject,
-		isFocused,
-		isFileDialogActive,
 		disabledUpload,
 	]);
 
@@ -255,7 +255,7 @@ export default ({
 			// @ts-ignore
 			rootRef.current.noDrag = true;
 
-			const chunkSize = 1024 * 1024 / 2;
+			const chunkSize = 1024 * 1024 / 4;
 
 			const createStreams = async () => {
 
@@ -313,6 +313,8 @@ export default ({
 				addOptions: {
 					wrapWithDirectory: true,
 					progress: updateProgress,
+					// @ts-ignore
+					recursive: true,
 				},
 				timeout: 60 * 60 * 1000,
 			})
