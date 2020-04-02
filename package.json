@@ -9,12 +9,12 @@
     "start": "next start"
   },
   "dependencies": {
-    "@bluelovers/ipfs-http-client": "^1.0.26",
+    "@bluelovers/ipfs-http-client": "^1.0.28",
     "@tanker/file-reader": "^2.3.0",
     "array-hyper-unique": "^1.1.0",
     "bluebird": "^3.7.2",
     "buffer": "^5.5.0",
-    "fetch-ipfs": "^1.0.31",
+    "fetch-ipfs": "^1.0.33",
     "ipfs-browser-util": "^1.0.2",
     "ipfs-http-client": "^43.0.0",
     "ipfs-server-list": "^1.0.20",

@@ -15,7 +15,7 @@ const ALinkCidMain = ({
 }) => {
 	return (<ALinkCid
 		style={{
-			color: index > 4 ? '#e600ff' : '#ff008c',
+			color: index > 3 ? '#e600ff' : '#ff008c',
 			wordBreak: 'break-all',
 			wordWrap: 'break-word',
 		}}
@@ -46,6 +46,7 @@ export default ({
 						style={{
 							marginBottom: 5,
 						}}
+						key={index}
 					>
 						<ALinkCidMain
 							cid={lastCid}
@@ -74,6 +75,7 @@ export default ({
 				wordWrap: 'break-word',
 			}}
 		>
+			<p>請注意：如果上傳大約 20 MB 以上檔案的話，如果接收者沒有安裝 IPFS 的話，則需要花費一定程度以上時間伺服器才能找到檔案</p>
 			{showCids()}
 		</div>
 	</>

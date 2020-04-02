@@ -15,6 +15,7 @@ import { ipfsGatewayAddressesLink } from 'ipfs-util-lib/lib/api/multiaddr';
 import MainCid from './MyDropzone/MainCid';
 import MyFileList, { IFileWithPathWithCid } from './MyDropzone/MyFileList';
 import PanelTools from './PanelTools';
+import uploadToIPFS, { createStreams } from '../lib/MyDropzone/uploadToIPFS';
 
 const baseStyle = {
 	flex: 1,
@@ -92,7 +93,7 @@ export default ({
 	const [ipfs, setIpfs] = useState(null as IIPFSFileApi);
 	const [disabledUpload, setDisabledUpload] = useState(1);
 
-	const serverList = filterList('API');
+	const serverList: IIPFSAddressesLike['API'][] = filterList('API');
 
 	useEffect(() =>
 	{
@@ -171,6 +172,8 @@ export default ({
 	const [files, setFiles] = useState([] as IFileWithPathWithCid[]);
 	const [currentProgress, setCurrentProgress] = useState(0);
 
+	const chunkSize = 1024 * 1024 / 3;
+
 	useEffect(() =>
 	{
 		/**
@@ -190,74 +193,30 @@ export default ({
 		{
 			setDisabledUpload(2);
 			setCurrentProgress(0);
-			// @ts-ignore
-			rootRef.current.noDrag = true;
 
-			const chunkSize = 1024 * 1024 / 4;
-
-			const createStreams = async () => {
-
-				let totalSize = 0;
-
-				const streams = await Bluebird
-					.resolve(acceptedFiles)
-					.map(async (file: FileWithPath) =>
-					{
-
-						totalSize += file.size;
-
-						const ai = async function* (): AsyncGenerator<Buffer, void, unknown>
-						{
-							const reader = new FileReader(file);
-
-							let chunk;
-							do
-							{
-								//console.log(file.path, chunk)
-								chunk = await reader.readAsArrayBuffer(chunkSize);
-
-								yield chunk
-							}
-							while (chunk.byteLength > 0);
-						};
-
-						return {
-							path: file.path,
-							content: ai(),
-							size: file.size,
-						}
-					})
-				;
-
-				return {
-					streams,
-					totalSize,
-				}
-			}
-
-			let { streams, totalSize } = await createStreams();
-
-			const updateProgress = (sent) => {
+			const updateProgress = (sent: number, totalSize: number) => {
 
 				let currentProgress = sent / totalSize * 100;
 				currentProgress && setCurrentProgress(() => currentProgress);
+
 				console.log(currentProgress)
 			}
 
-			await publishToIPFSRace(streams, [
-				//...serverList,
+			return uploadToIPFS({
 				ipfs,
-			], {
-				addOptions: {
-					wrapWithDirectory: true,
-					progress: updateProgress,
-					// @ts-ignore
-					recursive: true,
-				},
-				timeout: 60 * 60 * 1000,
+				updateProgress,
+
+				serverList,
+
+				acceptedFiles,
+				chunkSize,
 			})
 				.then(async (result) =>
 				{
+					if (!result || !result?.length)
+					{
+						return Promise.reject(result)
+					}
 
 					// @ts-ignore
 					let value = result[0].value || result[0].reason.value;
@@ -283,6 +242,7 @@ export default ({
 					setLastCid(cid)
 					setFiles(acceptedFiles)
 				})
+			;
 		}
 	};
 
