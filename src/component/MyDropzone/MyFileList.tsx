@@ -4,6 +4,7 @@ import prettyBytes from 'pretty-bytes';
 import { toURL as toIpfsURL } from 'to-ipfs-url';
 import { array_unique_overwrite } from 'array-hyper-unique';
 import ALink from '../ALink';
+import ALinkPoke from './ALinkPoke';
 
 export interface IFileWithPathWithCid extends FileWithPath
 {
@@ -90,13 +91,13 @@ const MyFile = ({
 										marginRight: 5,
 									}}
 								>|</span>) || null}
-								<ALink
+								<ALinkPoke
 									style={{
 										color: i > 4 ? '#00a483' : '#4DA400',
 									}}
 									href={url.href}
 									title={url.hostname}
-								>LINK {1 + i}</ALink>
+								>LINK {1 + i}</ALinkPoke>
 							</span>)
 						})}
 					</div>

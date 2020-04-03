@@ -1,0 +1,57 @@
+@import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+
+$font_nextjs: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+
+$font_nextjs_code: Menlo, Monaco, Lucida Console, Liberation Mono,
+DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+
+$font_jetbrains: 'JetBrains Mono';
+
+$font_noto_sans_tc: 'Noto Sans TC';
+
+@font-face
+{
+	font-family: 'JetBrains Mono';
+	src: url('https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/web/eot/JetBrainsMono-Regular.eot') format('embedded-opentype'),
+	url('https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/web/woff2/JetBrainsMono-Regular.woff2') format('woff2'),
+	url('https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/web/woff/JetBrainsMono-Regular.woff') format('woff'),
+	url('https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/ttf/JetBrainsMono-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+*
+{
+	-webkit-font-feature-settings: "liga" on, "calt" on;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+	font-family: 'JetBrains Mono';
+}
+
+*
+{
+	box-sizing: border-box;
+}
+
+html, body, :root
+{
+	background-color: #23272b;
+	color: #bbb;
+
+	padding: 0;
+	margin: 0;
+	font-family: $font_jetbrains, $font_nextjs;
+}
+
+code, pre
+{
+	font-family: $font_jetbrains, $font_nextjs_code;
+}
+
+a
+{
+	color: inherit;
+	text-decoration: none;
+}
+

@@ -1,8 +1,7 @@
-import React, { PropsWithChildren, ReactNode, DetailedHTMLProps } from 'react';
-import { toLink as toIpfsLink } from 'to-ipfs-url';
-import { ipfsServerList } from 'ipfs-server-list';
-import ALink from '../ALink';
+import React, { PropsWithChildren } from 'react';
 import ALinkCid, { IALinkCidProps } from './ALinkCid';
+import { EnumCurrentAppState } from '../MyDropzone';
+import { IFileWithPathWithCid } from './MyFileList';
 
 const ALinkCidMain = ({
 	cid,
@@ -30,11 +29,15 @@ const ALinkCidMain = ({
 }
 
 export default ({
+	files,
 	lastCid,
 	ipfsGatewayList,
+	currentAppState,
 }: PropsWithChildren<{
 	lastCid: string,
 	ipfsGatewayList: string[],
+	currentAppState: EnumCurrentAppState,
+	files: IFileWithPathWithCid[],
 }>) =>
 {
 	const showCids = () => {
@@ -75,8 +78,15 @@ export default ({
 				wordWrap: 'break-word',
 			}}
 		>
-			<p>請注意：如果上傳大約 20 MB 以上檔案的話，如果接收者沒有安裝 IPFS 的話，則需要花費一定程度以上時間伺服器才能找到檔案</p>
-			{showCids()}
+			<p>請注意：當上傳大約 20 MB 以上檔案時，如果接收者沒有安裝 IPFS 的話，則需要花費一定程度以上時間伺服器才能找到檔案</p>
+			{currentAppState === EnumCurrentAppState.FAIL ? (<>
+
+				<p style={{
+					textAlign: 'center',
+					padding: 10,
+				}}>上傳失敗（ {files.filter(file => file.cid).length} ／ {files.length} ）</p>
+
+			</>) : showCids()}
 		</div>
 	</>
 }

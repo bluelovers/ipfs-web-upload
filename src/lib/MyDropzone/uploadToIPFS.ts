@@ -138,7 +138,7 @@ export default function ({
 					chunkSize,
 				})
 					.then(resolve2)
-					.catch(e => console.error(e)),
+					.catch(e => console.error(`[pushToIPFS:1]`, e)),
 
 				Bluebird
 					.each(serverList, async (ipfs) =>
@@ -151,7 +151,7 @@ export default function ({
 							chunkSize,
 						})
 							.then(resolve2)
-							.catch(e => console.error(e))
+							.catch(e => console.error(`[pushToIPFS:2]`, e))
 							;
 
 					}),

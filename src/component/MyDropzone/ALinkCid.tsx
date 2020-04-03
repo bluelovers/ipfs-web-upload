@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, ReactNode, DetailedHTMLProps } from 'react';
 import { toLink as toIpfsLink } from 'to-ipfs-url';
 import ALink from '../ALink';
+import ALinkPoke from './ALinkPoke';
 
 export interface IALinkCidProps extends DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>
 {
@@ -22,10 +23,10 @@ export default ({
 		},
 	});
 
-	return (<ALink
+	return (<ALinkPoke
 		{...prop}
 		href={href}
 	>
 		{children}
-	</ALink>)
+	</ALinkPoke>)
 }

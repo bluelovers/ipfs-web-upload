@@ -1,14 +1,17 @@
 import React, { HTMLProps, ReactNode, DetailedHTMLProps } from 'react';
 
+export interface IALinkProps extends DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>
+{
+	href: string,
+	target?: string,
+}
+
 export default ({
 	href,
 	target = '_blank',
 	children,
 	...prop
-}: DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement> & {
-	href: string,
-	target?: string,
-}) =>
+}: IALinkProps) =>
 {
 	return (<a
 		href={href}

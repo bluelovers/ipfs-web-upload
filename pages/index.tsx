@@ -3,6 +3,7 @@ import MyDropzone from '../src/component/MyDropzone';
 import React, { createRef } from 'react';
 import Dropzone, { useDropzone, DropEvent, FileWithPath, DropzoneState, DropzoneRef } from 'react-dropzone';
 import ALink from '../src/component/ALink';
+import './index.module.scss';
 
 const Home = () =>
 {
@@ -148,9 +149,6 @@ const Home = () =>
         background: #fafafa;
         border-radius: 5px;
         padding: 0.75rem;
-        font-size: 1.1rem;
-        font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-          DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
       }
 
       .grid {
@@ -203,28 +201,6 @@ const Home = () =>
       .dropzoneBody:focus
       {
       outline: transparent auto 0px;
-      }
-    `}</style>
-
-			<style jsx global>{`
-      html,
-      body, :root {
-      background-color: #23272b;
-      color: #bbb;
-      
-        padding: 0;
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-          Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-      
-      a {
-        color: inherit;
-        text-decoration: none;
       }
     `}</style>
 		</div>

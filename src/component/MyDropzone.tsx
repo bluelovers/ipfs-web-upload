@@ -12,10 +12,20 @@ import { toLink as toIpfsLink, toURL as toIpfsURL } from 'to-ipfs-url';
 import { array_unique_overwrite } from 'array-hyper-unique';
 import prettyBytes from 'pretty-bytes';
 import { ipfsGatewayAddressesLink } from 'ipfs-util-lib/lib/api/multiaddr';
+import { ipfsApiAddresses } from 'ipfs-util-lib';
 import MainCid from './MyDropzone/MainCid';
 import MyFileList, { IFileWithPathWithCid } from './MyDropzone/MyFileList';
 import PanelTools from './PanelTools';
 import uploadToIPFS, { createStreams } from '../lib/MyDropzone/uploadToIPFS';
+import styles from './MyDropzone.module.scss';
+
+export enum EnumCurrentAppState
+{
+	INIT = 0,
+	READY = 1,
+	UPLOADING = 2,
+	FAIL = 3,
+}
 
 const baseStyle = {
 	flex: 1,
@@ -91,7 +101,8 @@ export default ({
 	 */
 
 	const [ipfs, setIpfs] = useState(null as IIPFSFileApi);
-	const [disabledUpload, setDisabledUpload] = useState(1);
+	const [currentAppState, setCurrentAppState] = useState<EnumCurrentAppState>(EnumCurrentAppState.INIT);
+	const [ipfsServer, setIpfsServer] = useState<string>();
 
 	const serverList: IIPFSAddressesLike['API'][] = filterList('API');
 
@@ -117,7 +128,14 @@ export default ({
 			.then(ipfs =>
 			{
 				setIpfs(ipfs);
-				setDisabledUpload(0);
+				setCurrentAppState(EnumCurrentAppState.READY);
+
+				return ipfsApiAddresses(ipfs)
+					.then(addresses => setIpfsServer(addresses))
+					.catch(e => {
+						console.dir(ipfs?.opts);
+						console.dir(ipfs?.opts?.base);
+					})
 			})
 		;
 
@@ -160,11 +178,11 @@ export default ({
 		...((isDragActive || isFocused) ? activeStyle : {}),
 		...((isDragAccept || isFileDialogActive) ? acceptStyle : {}),
 		...(isDragReject ? rejectStyle : {}),
-		...(disabledUpload === 2 ? uploadingStyle : {}),
+		...(currentAppState === EnumCurrentAppState.UPLOADING ? uploadingStyle : {}),
 	}), [
 		isDragActive,
 		isDragAccept,
-		disabledUpload,
+		currentAppState,
 	]);
 
 	const [lastCid, setLastCid] = useState<string>();
@@ -179,11 +197,17 @@ export default ({
 		/**
 		 * 正在上傳檔案的時候 不允許新增檔案
 		 */
-		if (disabledUpload !== 2)
+		if (currentAppState !== EnumCurrentAppState.UPLOADING)
 		{
 			setFiles(acceptedFiles)
 		}
 	}, [acceptedFiles]);
+
+	const updateProgress = (sent: number, totalSize: number) => {
+		let c = sent / totalSize * 100;
+		setCurrentProgress(c);
+		console.log(`[CurrentProgress]`, c)
+	}
 
 	const doUploadCore = async () =>
 	{
@@ -191,16 +215,11 @@ export default ({
 
 		if (acceptedFiles.length && ipfs)
 		{
-			setDisabledUpload(2);
+			setCurrentAppState(EnumCurrentAppState.UPLOADING);
 			setCurrentProgress(0);
+			setLastCid(void 0);
 
-			const updateProgress = (sent: number, totalSize: number) => {
-
-				let currentProgress = sent / totalSize * 100;
-				currentProgress && setCurrentProgress(() => currentProgress);
-
-				console.log(currentProgress)
-			}
+			const totalFiles = acceptedFiles.length;
 
 			return uploadToIPFS({
 				ipfs,
@@ -223,10 +242,16 @@ export default ({
 
 					let i = 0;
 					let cid: string;
+					let firstCid: string;
 
 					for await (const file of value)
 					{
 						cid = file.cid.toString();
+
+						if (firstCid === void 0)
+						{
+							firstCid = cid;
+						}
 
 						if (acceptedFiles[i])
 						{
@@ -239,7 +264,24 @@ export default ({
 						//console.log(cid)
 					}
 
-					setLastCid(cid)
+					console.dir({
+						firstCid,
+						cid,
+						i,
+						totalFiles,
+						length: value.length,
+					})
+
+					if (firstCid === cid || !cid || i <= totalFiles)
+					{
+						setCurrentAppState(EnumCurrentAppState.FAIL)
+					}
+					else
+					{
+						setLastCid(cid)
+						setCurrentAppState(EnumCurrentAppState.READY)
+					}
+
 					setFiles(acceptedFiles)
 				})
 			;
@@ -247,9 +289,19 @@ export default ({
 	};
 
 	const doUpload = () => doUploadCore()
+		.catch(e => console.error(`[doUpload]`, e))
 		.finally(() =>
 		{
-			setDisabledUpload(0)
+
+			setCurrentAppState((currentAppState) => {
+
+				if (currentAppState !== EnumCurrentAppState.FAIL)
+				{
+					return EnumCurrentAppState.READY
+				}
+
+				return currentAppState
+			})
 		})
 	;
 
@@ -262,7 +314,7 @@ export default ({
 				padding: 20,
 			}}
 		>
-			<div style={style as any} onClick={() => !disabledUpload && dropzoneRef.current.open()}>
+			<div style={style as any} onClick={() => currentAppState === EnumCurrentAppState.READY && dropzoneRef.current.open()}>
 				<input {...getInputProps()} />
 				<div style={{
 					alignItems: 'center',
@@ -271,13 +323,16 @@ export default ({
 					margin: 10,
 				}}>
 					{
-						(disabledUpload === 2) ?
+						(currentAppState === EnumCurrentAppState.UPLOADING) ?
 							<p
 								style={{
 									color: '#4DA400',
 								}}
 							>{currentProgress}%</p> :
 							<p>將檔案拖放到此處，或單擊以選擇檔案</p>
+					}
+					{
+						files.length ? (<p>總計 {files.length} 個檔案</p>) : undefined
 					}
 					<p
 						style={{
@@ -298,22 +353,25 @@ export default ({
 						padding: 5,
 						borderRadius: 5,
 
-						backgroundColor: disabledUpload === 2 ? '#ff008c' : disabledUpload === 0 ? '#4DA400' : 'unset',
+						backgroundColor: currentAppState === EnumCurrentAppState.UPLOADING ? '#ff008c' : currentAppState === EnumCurrentAppState.READY ? '#4DA400' : 'unset',
 
-						color: disabledUpload === 2 ? '#fff' : disabledUpload === 0 ? '#fff' : 'unset',
+						color: currentAppState === EnumCurrentAppState.UPLOADING ? '#fff' : currentAppState === EnumCurrentAppState.READY ? '#fff' : 'unset',
 					}}
 					onClick={doUpload}
-					disabled={!!disabledUpload}
-				>{disabledUpload === 2 ? '上傳中，請稍後...' : disabledUpload === 1 ? '初始化連接 IPFS ...' : '上傳'}
+					disabled={currentAppState !== EnumCurrentAppState.READY}
+				>
+					{currentAppState === EnumCurrentAppState.UPLOADING ? '上傳中，請稍後... ' : currentAppState === EnumCurrentAppState.INIT ? '初始化連接 IPFS ... ' : `上傳至 `}
+					{ipfsServer || 'unknown'}
 				</button>
 			</div>
 
-			<MainCid lastCid={lastCid} ipfsGatewayList={ipfsGatewayList}/>
+			<MainCid lastCid={lastCid} ipfsGatewayList={ipfsGatewayList} currentAppState={currentAppState} files={files} />
 
 			<PanelTools/>
 
 			<div>
 				<h4>檔案列表</h4>
+				<p>在網址後方加上<code className={styles.code}>?filename=檔案名稱.epub</code>的話，當觸發檔案下載時就會將檔案儲存成你所設定的檔名</p>
 				<MyFileList
 					files={files}
 					ipfsGatewayMain={ipfsGatewayMain}
