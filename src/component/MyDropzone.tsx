@@ -137,7 +137,7 @@ export default ({
 
 				return ipfsApiAddresses(ipfs)
 					.then(addresses => setIpfsServer(() => addresses))
-					.catch(e => console.error(ipfs, e))
+					.catch(e => console.error(`沒有權限取得 IPFS 伺服器位址`, ipfs, e))
 			})
 		;
 
@@ -365,7 +365,7 @@ export default ({
 					disabled={currentAppState !== EnumCurrentAppState.READY}
 				>
 					{currentAppState === EnumCurrentAppState.UPLOADING ? '上傳中，請稍後... ' : currentAppState === EnumCurrentAppState.INIT ? '初始化連接 IPFS ... ' : `上傳至 `}
-					{ipfsServer || 'unknown'}
+					{ipfsServer || 'Unknown IPFS Server'}
 				</button>
 			</div>
 
