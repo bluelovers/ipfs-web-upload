@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "build:export": "next export",
-    "build:ipfs": "next build && yarn run build:export && esm-ts-node ./script/upload-to-ipfs.ts",
+    "build:export": "next build && next export",
+    "build:ipfs": "yarn run build:export && esm-ts-node ./script/upload-to-ipfs.ts",
     "ci:install": "yarn add --disable-self-update-check --prefer-offline ipfs ipfsd-ctl",
     "dev": "next dev",
     "ncu": "npx yarn-tool ncu -u && npx yarn-tool install && yarn run sort",
