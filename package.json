@@ -6,9 +6,9 @@
     "ncu": "npx yarn-tool ncu -u && npx yarn-tool install",
     "dev": "next dev",
     "ci:install": "yarn add ipfs use-ipfs",
-    "build": "yarn run build:ipfs && next build",
+    "build": "next build",
     "build:export": "next export",
-    "build:ipfs": "yarn run build:export && esm-ts-node script/upload-to-ipfs.ts",
+    "build:ipfs": "next build && yarn run build:export && esm-ts-node script/upload-to-ipfs.ts",
     "prepublishOnly": "yarn run build:ipfs",
     "start": "next start"
   },
