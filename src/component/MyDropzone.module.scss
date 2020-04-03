@@ -16,3 +16,25 @@
 	line-height: 1.5;
 	tab-size: 2;
 }
+
+.file_list_inner
+{
+	overflow-y: auto;
+	max-height: 300px;
+
+	&::-webkit-scrollbar
+	{
+		width: 10px;
+	}
+
+	&::-webkit-scrollbar-track
+	{
+		background: #2c353b;
+		border-radius: 10px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: rgb(112, 177, 230);
+		border-radius: 10px;
+	}
+}

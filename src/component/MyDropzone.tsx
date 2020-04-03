@@ -365,11 +365,19 @@ export default ({
 			<div>
 				<h4>檔案列表</h4>
 				<p>在網址後方加上<code className={styles.code}>?filename=檔案名稱.epub</code>的話，當觸發檔案下載時就會將檔案儲存成你所設定的檔名</p>
+				<div
+					className={styles.file_list_inner}
+					style={{
+						overflowY: 'auto',
+						maxHeight: 300,
+					}}
+				>
 				<MyFileList
 					files={files}
 					ipfsGatewayMain={ipfsGatewayMain}
 					ipfsGatewayList={ipfsGatewayList}
 				/>
+				</div>
 			</div>
 
 			<style jsx>{`
