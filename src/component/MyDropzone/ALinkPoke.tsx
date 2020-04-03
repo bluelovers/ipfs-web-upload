@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, ReactNode, useState, useEffect } from 'react';
 import ALink, { IALinkProps } from '../ALink';
 import { pokeURL } from 'poke-ipfs';
+import console from '../../lib/console2';
 
 export default ({
 	href,

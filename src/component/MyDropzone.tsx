@@ -18,6 +18,7 @@ import MyFileList, { IFileWithPathWithCid } from './MyDropzone/MyFileList';
 import PanelTools from './PanelTools';
 import uploadToIPFS, { createStreams } from '../lib/MyDropzone/uploadToIPFS';
 import styles from './MyDropzone.module.scss';
+import console from '../lib/console2';
 
 export enum EnumCurrentAppState
 {
@@ -109,6 +110,8 @@ export default ({
 	useEffect(() =>
 	{
 
+		console.info(`搜尋可用的 IPFS API 伺服器...`);
+
 		findIpfsClient([
 			...getDefaultServerList()
 				.map(url =>
@@ -127,15 +130,14 @@ export default ({
 		})
 			.then(ipfs =>
 			{
+				console.info(`成功連接 IPFS API 伺服器`);
+
 				setIpfs(ipfs);
 				setCurrentAppState(EnumCurrentAppState.READY);
 
 				return ipfsApiAddresses(ipfs)
-					.then(addresses => setIpfsServer(addresses))
-					.catch(e => {
-						console.dir(ipfs?.opts);
-						console.dir(ipfs?.opts?.base);
-					})
+					.then(addresses => setIpfsServer(() => addresses))
+					.catch(e => console.error(ipfs, e))
 			})
 		;
 
@@ -206,12 +208,14 @@ export default ({
 	const updateProgress = (sent: number, totalSize: number) => {
 		let c = sent / totalSize * 100;
 		setCurrentProgress(c);
-		console.log(`[CurrentProgress]`, c)
+		console.info(`[CurrentProgress]`, c)
 	}
 
 	const doUploadCore = async () =>
 	{
 		let acceptedFiles = files;
+
+		console.info(`即將開始上傳檔案`, acceptedFiles)
 
 		if (acceptedFiles.length && ipfs)
 		{
@@ -264,13 +268,13 @@ export default ({
 						//console.log(cid)
 					}
 
-					console.dir({
-						firstCid,
-						cid,
-						i,
-						totalFiles,
-						length: value.length,
-					})
+//					console.dir({
+//						firstCid,
+//						cid,
+//						i,
+//						totalFiles,
+//						length: value.length,
+//					})
 
 					if (firstCid === cid || !cid || i <= totalFiles)
 					{

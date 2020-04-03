@@ -18,6 +18,7 @@
     "array-hyper-unique": "^1.1.0",
     "bluebird": "^3.7.2",
     "buffer": "^5.5.0",
+    "consola": "^2.11.3",
     "cross-fetch": "^3.0.4",
     "fetch-ipfs": "^1.0.33",
     "ipfs-browser-util": "^1.0.2",

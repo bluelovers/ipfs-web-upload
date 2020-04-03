@@ -6,6 +6,7 @@ import { IIPFSFileApi } from 'ipfs-types/lib/ipfs/file';
 import { filterList, IIPFSAddressesLike, ipfsServerList } from 'ipfs-server-list';
 import publishToIPFSRace from 'fetch-ipfs/put';
 import { IPublishToIPFSReturn } from 'fetch-ipfs/lib/put/types';
+import console from '../../lib/console2';
 
 export const createStreams = async (acceptedFiles: IFileWithPathWithCid[], chunkSize: number) =>
 {
