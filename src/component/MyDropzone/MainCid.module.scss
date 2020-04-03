@@ -1,0 +1,23 @@
+.main_cid_inner
+{
+	max-height: 205px;
+	overflow-y: auto;
+	padding-right: 10px;
+
+	&::-webkit-scrollbar
+	{
+		width: 10px;
+	}
+
+	&::-webkit-scrollbar-track
+	{
+		background: transparent;
+		border-radius: 10px;
+	}
+
+	&::-webkit-scrollbar-thumb
+	{
+		background: rgb(255, 0, 140);
+		border-radius: 10px;
+	}
+}

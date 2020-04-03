@@ -2,6 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import ALinkCid, { IALinkCidProps } from './ALinkCid';
 import { EnumCurrentAppState } from '../MyDropzone';
 import { IFileWithPathWithCid } from './MyFileList';
+import styles from './MainCid.module.scss';
 
 const ALinkCidMain = ({
 	cid,
@@ -78,6 +79,7 @@ export default ({
 				wordWrap: 'break-word',
 			}}
 		>
+			<div className={styles.main_cid_inner}>
 			<p>請注意：當上傳大約 20 MB 以上檔案時，如果接收者沒有安裝 IPFS 的話，則需要花費一定程度以上時間伺服器才能找到檔案</p>
 			{currentAppState === EnumCurrentAppState.FAIL ? (<>
 
@@ -87,6 +89,7 @@ export default ({
 				}}>上傳失敗（ {files.filter(file => file.cid).length} ／ {files.length} ）</p>
 
 			</>) : showCids()}
+			</div>
 		</div>
 	</>
 }

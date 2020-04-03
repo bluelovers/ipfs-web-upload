@@ -351,7 +351,7 @@ export default ({
 						color: currentAppState === EnumCurrentAppState.UPLOADING ? '#fff' : currentAppState === EnumCurrentAppState.READY ? '#fff' : 'unset',
 					}}
 					onClick={doUpload}
-					disabled={currentAppState !== EnumCurrentAppState.READY}
+					disabled={currentAppState !== EnumCurrentAppState.READY && currentAppState !== EnumCurrentAppState.FAIL}
 				>
 					{currentAppState === EnumCurrentAppState.UPLOADING ? '上傳中，請稍後... ' : currentAppState === EnumCurrentAppState.INIT ? '初始化連接 IPFS ... ' : `上傳至 `}
 					{ipfsServer || 'Unknown IPFS Server'}
