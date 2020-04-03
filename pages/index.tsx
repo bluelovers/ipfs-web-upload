@@ -3,7 +3,7 @@ import MyDropzone from '../src/component/MyDropzone';
 import React, { createRef } from 'react';
 import Dropzone, { useDropzone, DropEvent, FileWithPath, DropzoneState, DropzoneRef } from 'react-dropzone';
 import ALink from '../src/component/ALink';
-import './index.module.scss';
+import styles from  './index.module.scss';
 
 const Home = () =>
 {
@@ -50,7 +50,7 @@ const Home = () =>
 							>IPFS Uploader</ALink>
 						</h1>
 
-						<p className="description">
+						<p className={styles.description}>
 							無需註冊免費將您的檔案上傳至 IPFS 網路
 						</p>
 

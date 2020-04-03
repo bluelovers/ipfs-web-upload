@@ -1,14 +1,5 @@
+@import './vars.scss';
 @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
-
-$font_nextjs: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-
-$font_nextjs_code: Menlo, Monaco, Lucida Console, Liberation Mono,
-DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-
-$font_jetbrains: 'JetBrains Mono';
-
-$font_noto_sans_tc: 'Noto Sans TC';
 
 @font-face
 {
@@ -26,7 +17,7 @@ $font_noto_sans_tc: 'Noto Sans TC';
 	-webkit-font-feature-settings: "liga" on, "calt" on;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
-	font-family: 'JetBrains Mono';
+	font-family: $font_jetbrains, $font_nextjs;
 }
 
 *

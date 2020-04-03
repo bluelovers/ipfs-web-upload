@@ -1,0 +1,9 @@
+@import '../src/style/vars.scss';
+
+.description
+{
+	line-height: 1.5;
+	font-size: 1.65rem;
+	font-family: $font_noto_sans_tc, $font_jetbrains, $font_nextjs;
+	font-weight: 600;
+}
