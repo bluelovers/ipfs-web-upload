@@ -11,7 +11,8 @@ import { pokeURL } from 'poke-ipfs';
 
 export default useIPFS()
 	.then(async ({
-		ipfs
+		ipfs,
+		stop,
 	}) => {
 
 		await ipfsWebuiAddresses(ipfs)
@@ -49,12 +50,14 @@ export default useIPFS()
 				});
 
 				return pokeURL(href, {
-					cors: true,
+					//cors: true,
 				})
 					.then((response) => {
 						console.info(response.value, href)
 					})
 					.catch(e => null)
 		})
+
+		return stop();
 	})
 ;
