@@ -19,6 +19,7 @@ import PanelTools from './PanelTools';
 import uploadToIPFS, { createStreams } from '../lib/MyDropzone/uploadToIPFS';
 import styles from './MyDropzone.module.scss';
 import console from '../lib/console2';
+import getIpfsGatewayList from '../lib/getIpfsGatewayList';
 
 export enum EnumCurrentAppState
 {
@@ -149,29 +150,17 @@ export default ({
 	useEffect(() =>
 	{
 
-		(async () => {
-			const ipfsGatewayList: string[] = [];
+		getIpfsGatewayList(ipfs)
+			.then(({
+				ipfsGatewayMain,
+				ipfsGatewayList,
+			}) => {
 
-			await ipfsGatewayAddressesLink(ipfs)
-				.then(gateway => {
-					ipfsGatewayList.push(gateway);
+				ipfsGatewayMain && setIpfsGatewayMain(() => ipfsGatewayMain);
+				setIpfsGatewayList(() => ipfsGatewayList);
 
-					setIpfsGatewayMain(() => gateway)
-				})
-				.catch(e => null)
-			;
-
-			filterList('Gateway')
-				.forEach(gateway => {
-					ipfsGatewayList.push(gateway);
-				})
-			;
-
-			array_unique_overwrite(ipfsGatewayList);
-
-			setIpfsGatewayList(() => ipfsGatewayList)
-
-		})();
+			})
+		;
 
 	}, [ipfs])
 

@@ -25,6 +25,9 @@ jobs:
           echo ${{ steps.yarn-cache.outputs.dir }}
           echo ${{ steps.id-cache.outputs.id }}
           echo ${GITHUB_SHA}
+          echo node -v
+          echo npm -v
+          echo yarn -v
       - name: yarn cache
         uses: bluelovers/github-actions-cache@2020011001
         with:

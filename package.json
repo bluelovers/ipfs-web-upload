@@ -3,24 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "ncu": "npx yarn-tool ncu -u && npx yarn-tool install",
-    "dev": "next dev",
-    "ci:install": "yarn add ipfs use-ipfs",
     "build": "next build",
     "build:export": "next export",
-    "build:ipfs": "next build && yarn run build:export && esm-ts-node script/upload-to-ipfs.ts",
+    "build:ipfs": "next build && yarn run build:export && esm-ts-node ./script/upload-to-ipfs.ts",
+    "ci:install": "yarn add --disable-self-update-check --prefer-offline ipfs ipfsd-ctl",
+    "dev": "next dev",
+    "ncu": "npx yarn-tool ncu -u && npx yarn-tool install && yarn run sort",
     "prepublishOnly": "yarn run build:ipfs",
+    "sort": "npx yarn-tool sort",
     "start": "next start"
   },
   "dependencies": {
-    "@bluelovers/ipfs-http-client": "^1.0.28",
+    "@bluelovers/ipfs-http-client": "^1.0.29",
     "@tanker/file-reader": "^2.3.0",
     "array-hyper-unique": "^1.1.0",
     "bluebird": "^3.7.2",
     "buffer": "^5.5.0",
     "consola": "^2.11.3",
     "cross-fetch": "^3.0.4",
-    "fetch-ipfs": "^1.0.33",
+    "fetch-ipfs": "^1.0.34",
     "ipfs-browser-util": "^1.0.2",
     "ipfs-http-client": "^43.0.0",
     "ipfs-server-list": "^1.0.20",
@@ -35,12 +36,13 @@
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.30",
-    "@types/node": "^13.9.8",
-    "@types/react": "^16.9.31",
+    "@types/node": "^13.11.0",
+    "@types/react": "^16.9.32",
     "@types/react-dom": "^16.9.6",
     "esm": "^3.2.25",
     "esm-ts-node": "^1.0.5",
     "ts-node": "^8.8.1",
-    "typescript": "^3.9.0-dev.20200330"
+    "typescript": "^3.9.0-dev.20200330",
+    "use-ipfs": "^1.0.32"
   }
 }
