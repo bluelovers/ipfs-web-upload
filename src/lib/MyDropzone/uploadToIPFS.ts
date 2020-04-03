@@ -76,6 +76,7 @@ async function pushToIPFS({
 
 	if (updateProgress)
 	{
+		let totalSend: number = 0;
 		progressFn = (sent: number) => updateProgress(sent, totalSize)
 	}
 

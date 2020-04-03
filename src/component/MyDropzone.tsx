@@ -195,8 +195,8 @@ export default ({
 	}, [acceptedFiles]);
 
 	const updateProgress = (sent: number, totalSize: number) => {
-		let c = sent / totalSize * 100;
-		setCurrentProgress(c);
+		let c = (sent / totalSize) * 100;
+		setCurrentProgress(() => c);
 		console.info(`[CurrentProgress]`, c)
 	}
 
