@@ -25,6 +25,7 @@
     "ipfs-browser-util": "^1.0.2",
     "ipfs-http-client": "^43.0.0",
     "ipfs-server-list": "^1.0.21",
+    "ipfs-util-lib": "^1.0.23",
     "next": "9.3.4",
     "poke-ipfs": "^1.0.11",
     "pretty-bytes": "^5.3.0",

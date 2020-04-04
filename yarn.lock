@@ -2903,33 +2903,35 @@ ipfs-http-client@^43.0.0:
     parse-duration "^0.1.2"
     stream-to-it "^0.2.0"
 
-ipfs-server-list@^1.0.21:
-  version "1.0.21"
-  resolved "https://registry.npmjs.org/ipfs-server-list/-/ipfs-server-list-1.0.21.tgz#726bd94ee65b4d51abda6c6ba19d67dc20c6e584"
-  integrity sha512-WN8zw2m9nF08oE+mawUr2hMSSgxriyNr9zmFCc+aaAaFoQMa3LxkowJOcBOY2wqJ+sZQk4PwIi4wdRZiCrSvqg==
+ipfs-server-list@^1.0.21, ipfs-server-list@^1.0.26:
+  version "1.0.26"
+  resolved "https://registry.npmjs.org/ipfs-server-list/-/ipfs-server-list-1.0.26.tgz#dca69960395583673699d7a3431ee593cbd43dd6"
+  integrity sha512-y4/NLmEGwLO7PITbkAsQCmQyJXO+XhaDQZvYwlPfp2Y5TLXEB8krT08555Mk/ADAR9F7nC+sb9ugD+mT3sVgLg==
   dependencies:
-    ipfs-types "^1.0.14"
+    ipfs-types "^1.0.18"
     ts-type "^1.2.15"
 
-ipfs-types@^1.0.14:
-  version "1.0.14"
-  resolved "https://registry.npmjs.org/ipfs-types/-/ipfs-types-1.0.14.tgz#d3d321f3c8c817dc77f80950276a4b10025d0324"
-  integrity sha512-yBB1qF6COFJEPKXg8VR3BnNMBAh6SJjzwvOjKy6xLHOhjDp5jKcQZXA9WK0uPErHw5m0tKgR3fv9FIZFM9yqOQ==
+ipfs-types@^1.0.14, ipfs-types@^1.0.18:
+  version "1.0.18"
+  resolved "https://registry.npmjs.org/ipfs-types/-/ipfs-types-1.0.18.tgz#539a2b86761661f15b1490a29346897a1b3b6d1c"
+  integrity sha512-5uoynCcX5fmRQNq/oEirKq2WL6fTDRSmarVRCnNWF8t7NcJz6RHVVPxGwTafnka6KOI6XL/kseEyUzu8H6ENpQ==
   dependencies:
     "@types/bl" "^2.1.0"
     ts-type "^1.2.15"
 
-ipfs-util-lib@^1.0.16:
-  version "1.0.16"
-  resolved "https://registry.npmjs.org/ipfs-util-lib/-/ipfs-util-lib-1.0.16.tgz#f204b22f837817e6c0e78257fb0f2b76aadac5c9"
-  integrity sha512-uunfuSeajCDK+ePQSFHefIeaNvOVQGhI3RBMEn/bCH7RjTx2aJwJYrEVzl9XpGKJ2nId3kcIj6ZN7VHy4jG5Ww==
+ipfs-util-lib@^1.0.16, ipfs-util-lib@^1.0.23:
+  version "1.0.23"
+  resolved "https://registry.npmjs.org/ipfs-util-lib/-/ipfs-util-lib-1.0.23.tgz#9882631495e2e4459a3f379b7fe3c5352766a09d"
+  integrity sha512-4xJuP36a7gedGU1jtV5UrpTvScP/GlM53IUb7dUwe8obi2EnpIpwGW4XvHHTEf8g3vRTrn8e3raMwZ2CWTXrVg==
   dependencies:
     "@bluelovers/fast-glob" "^3.0.4"
+    array-hyper-unique "^1.1.0"
     buffer "^5.5.0"
     debug-color2 "^1.1.7"
     fast-glob "^3.2.2"
     get-stream "^5.1.0"
-    ipfs-types "^1.0.14"
+    ipfs-server-list "^1.0.26"
+    ipfs-types "^1.0.18"
     micromatch "^4.0.2"
     multiaddr-to-uri "^5.1.0"
     multiaddr-to-url "^1.0.2"

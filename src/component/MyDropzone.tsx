@@ -20,6 +20,7 @@ import uploadToIPFS, { createStreams } from '../lib/MyDropzone/uploadToIPFS';
 import styles from './MyDropzone.module.scss';
 import console from '../lib/console2';
 import getIpfsGatewayList from '../lib/getIpfsGatewayList';
+import tweakIPFSConfig from '../lib/ipfs/tweakIPFSConfig';
 
 export enum EnumCurrentAppState
 {
@@ -129,9 +130,11 @@ export default ({
 		], {
 			clientArgvs: [],
 		})
-			.then(ipfs =>
+			.then(async (ipfs) =>
 			{
 				console.info(`成功連接 IPFS API 伺服器`);
+
+				await tweakIPFSConfig(ipfs);
 
 				setIpfs(ipfs);
 				setCurrentAppState(EnumCurrentAppState.READY);
