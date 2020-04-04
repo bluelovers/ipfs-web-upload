@@ -14,20 +14,22 @@
     "start": "next start"
   },
   "dependencies": {
-    "@bluelovers/ipfs-http-client": "^1.0.30",
+    "@bluelovers/ipfs-http-client": "^1.0.39",
+    "@lazy-ipfs/buffer-json": "^1.0.1",
     "@tanker/file-reader": "^2.3.0",
     "array-hyper-unique": "^1.1.0",
     "bluebird": "^3.7.2",
     "buffer": "^5.5.0",
     "consola": "^2.11.3",
     "cross-fetch": "^3.0.4",
-    "fetch-ipfs": "^1.0.35",
+    "fetch-ipfs": "^1.0.45",
     "ipfs-browser-util": "^1.0.2",
     "ipfs-http-client": "^43.0.0",
-    "ipfs-server-list": "^1.0.21",
-    "ipfs-util-lib": "^1.0.23",
+    "ipfs-server-list": "^1.0.26",
+    "ipfs-util-lib": "^1.0.25",
+    "is-ipfs": "^0.6.3",
     "next": "9.3.4",
-    "poke-ipfs": "^1.0.11",
+    "poke-ipfs": "^1.0.15",
     "pretty-bytes": "^5.3.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -44,6 +46,6 @@
     "esm-ts-node": "^1.0.5",
     "ts-node": "^8.8.1",
     "typescript": "^3.9.0-dev.20200330",
-    "use-ipfs": "^1.0.33"
+    "use-ipfs": "^1.0.46"
   }
 }

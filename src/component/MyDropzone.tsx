@@ -1,50 +1,19 @@
-import React, { PropsWithChildren, ReactNode, useMemo, useState, useEffect, RefObject } from 'react';
-import Dropzone, { useDropzone, DropEvent, FileWithPath, DropzoneState, DropzoneRef } from 'react-dropzone';
-import ipfsClient, { findIpfsClient } from '@bluelovers/ipfs-http-client';
-import { filesToStreams } from 'ipfs-browser-util';
+import React, { useMemo, useState, useEffect, RefObject } from 'react';
+import { DropzoneState, DropzoneRef } from 'react-dropzone';
 import { getDefaultServerList } from '@bluelovers/ipfs-http-client/core';
-import { filterList, IIPFSAddressesLike, ipfsServerList } from 'ipfs-server-list';
+import { filterList, IIPFSAddressesLike } from 'ipfs-server-list';
 import { IIPFSFileApi } from 'ipfs-types/lib/ipfs/file';
-import Bluebird from 'bluebird';
-import FileReader from '@tanker/file-reader';
-import publishToIPFSRace from 'fetch-ipfs/put';
-import { toLink as toIpfsLink, toURL as toIpfsURL } from 'to-ipfs-url';
-import { array_unique_overwrite } from 'array-hyper-unique';
-import prettyBytes from 'pretty-bytes';
-import { ipfsGatewayAddressesLink } from 'ipfs-util-lib/lib/api/multiaddr';
-import { ipfsApiAddresses } from 'ipfs-util-lib';
 import MainCid from './MyDropzone/MainCid';
 import MyFileList, { IFileWithPathWithCid } from './MyDropzone/MyFileList';
 import PanelTools from './PanelTools';
-import uploadToIPFS, { createStreams } from '../lib/MyDropzone/uploadToIPFS';
+import uploadToIPFS from '../lib/MyDropzone/uploadToIPFS';
 import styles from './MyDropzone.module.scss';
 import console from '../lib/console2';
 import getIpfsGatewayList from '../lib/getIpfsGatewayList';
-import tweakIPFSConfig from '../lib/ipfs/tweakIPFSConfig';
-
-export enum EnumCurrentAppState
-{
-	INIT = 0,
-	READY = 1,
-	UPLOADING = 2,
-	FAIL = 3,
-}
-
-const baseStyle = {
-	flex: 1,
-	display: 'flex',
-	flexDirection: 'column',
-	alignItems: 'center',
-	padding: '20px',
-	borderWidth: 10,
-	borderRadius: 5,
-	borderColor: '#eeeeee',
-	borderStyle: 'dashed',
-	backgroundColor: '#fafafa',
-	color: '#bdbdbd',
-	outline: 'none',
-	transition: 'border .24s ease-in-out',
-};
+import setupIPFS from '../lib/ipfs/setupIPFS';
+import { chunkSize, EnumCurrentAppState } from '../lib/const';
+import { unsubscribeAll } from 'ipfs-util-lib/lib/ipfs/pubsub/unsubscribe';
+import connectPubsub from '../lib/ipfs/connectPubsub';
 
 const activeStyle = {
 	borderColor: '#2196f3',
@@ -106,15 +75,17 @@ export default ({
 	const [ipfs, setIpfs] = useState(null as IIPFSFileApi);
 	const [currentAppState, setCurrentAppState] = useState<EnumCurrentAppState>(EnumCurrentAppState.INIT);
 	const [ipfsServer, setIpfsServer] = useState<string>();
+	const [ipfsID, setIpfsID] = useState<string>();
 
 	const serverList: IIPFSAddressesLike['API'][] = filterList('API');
 
 	useEffect(() =>
 	{
+		const fnList: ((...argv: any[]) => any)[] = []
 
 		console.info(`搜尋可用的 IPFS API 伺服器...`);
 
-		findIpfsClient([
+		setupIPFS([
 			...getDefaultServerList()
 				.map(url =>
 				{
@@ -127,24 +98,38 @@ export default ({
 			// @ts-ignore
 			typeof window !== 'undefined' ? window.ipfs : void 0,
 			...serverList,
-		], {
-			clientArgvs: [],
-		})
-			.then(async (ipfs) =>
+		])
+			.then(async ({
+				ipfs,
+				ipfsID,
+				ipfsAddresses,
+			}) =>
 			{
-				console.info(`成功連接 IPFS API 伺服器`);
+				fnList.push(() => unsubscribeAll(ipfs))
 
-				await tweakIPFSConfig(ipfs);
+				setIpfs(() => ipfs);
+				setIpfsServer(() => ipfsAddresses);
+				setIpfsID(() => ipfsID);
+				setCurrentAppState(() => EnumCurrentAppState.READY);
 
-				setIpfs(ipfs);
-				setCurrentAppState(EnumCurrentAppState.READY);
-
-				return ipfsApiAddresses(ipfs)
-					.then(addresses => setIpfsServer(() => addresses))
-					.catch(e => console.error(`沒有權限取得 IPFS 伺服器位址`, ipfs, e))
+				return connectPubsub(ipfs)
+					.then((ret) => fnList.push(ret?.unsubscribe))
+					.catch(e => console.warn(`嘗試連接 Pubsub 節點 失敗`, e))
+				;
 			})
 		;
 
+		return async () => {
+			console.debug(`[useEffect:ipfs]`);
+			for (const fn of fnList)
+			{
+				try
+				{
+					await fn().catch(e => null)
+				}
+				catch (e){}
+			}
+		}
 	}, []);
 
 	const [ipfsGatewayList, setIpfsGatewayList] = useState([] as string[]);
@@ -157,9 +142,10 @@ export default ({
 			.then(({
 				ipfsGatewayMain,
 				ipfsGatewayList,
-			}) => {
+			}) =>
+			{
 
-				ipfsGatewayMain && setIpfsGatewayMain(() => ipfsGatewayMain);
+				setIpfsGatewayMain(() => ipfsGatewayMain);
 				setIpfsGatewayList(() => ipfsGatewayList);
 
 			})
@@ -168,7 +154,7 @@ export default ({
 	}, [ipfs])
 
 	const style = useMemo(() => ({
-		...baseStyle,
+		//...baseStyle,
 		...((isDragActive || isFocused) ? activeStyle : {}),
 		...((isDragAccept || isFileDialogActive) ? acceptStyle : {}),
 		...(isDragReject ? rejectStyle : {}),
@@ -184,8 +170,6 @@ export default ({
 	const [files, setFiles] = useState([] as IFileWithPathWithCid[]);
 	const [currentProgress, setCurrentProgress] = useState(0);
 
-	const chunkSize = 1024 * 1024 / 3;
-
 	useEffect(() =>
 	{
 		/**
@@ -197,7 +181,8 @@ export default ({
 		}
 	}, [acceptedFiles]);
 
-	const updateProgress = (sent: number, totalSize: number) => {
+	const updateProgress = (sent: number, totalSize: number) =>
+	{
 		let c = (sent / totalSize) * 100;
 		setCurrentProgress(() => c);
 		console.info(`[CurrentProgress]`, c)
@@ -280,7 +265,7 @@ export default ({
 
 					setFiles(acceptedFiles)
 				})
-			;
+				;
 		}
 	};
 
@@ -289,7 +274,8 @@ export default ({
 		.finally(() =>
 		{
 
-			setCurrentAppState((currentAppState) => {
+			setCurrentAppState((currentAppState) =>
+			{
 
 				if (currentAppState !== EnumCurrentAppState.FAIL)
 				{
@@ -310,7 +296,11 @@ export default ({
 				padding: 20,
 			}}
 		>
-			<div style={style as any} onClick={() => currentAppState === EnumCurrentAppState.READY && dropzoneRef.current.open()}>
+			<div
+				className={'drop_inner_body'}
+				style={style as any}
+				onClick={() => currentAppState === EnumCurrentAppState.READY && dropzoneRef.current.open()}
+			>
 				<input {...getInputProps()} />
 				<div style={{
 					alignItems: 'center',
@@ -349,21 +339,27 @@ export default ({
 						padding: 5,
 						borderRadius: 5,
 
-						backgroundColor: currentAppState === EnumCurrentAppState.UPLOADING ? '#ff008c' : currentAppState === EnumCurrentAppState.READY ? '#4DA400' : 'unset',
+						backgroundColor: currentAppState === EnumCurrentAppState.UPLOADING
+							? '#ff008c'
+							: currentAppState === EnumCurrentAppState.READY ? '#4DA400' : 'unset',
 
-						color: currentAppState === EnumCurrentAppState.UPLOADING ? '#fff' : currentAppState === EnumCurrentAppState.READY ? '#fff' : 'unset',
+						color: currentAppState === EnumCurrentAppState.UPLOADING
+							? '#fff'
+							: currentAppState === EnumCurrentAppState.READY ? '#fff' : 'unset',
 					}}
 					onClick={doUpload}
 					disabled={currentAppState !== EnumCurrentAppState.READY && currentAppState !== EnumCurrentAppState.FAIL}
 				>
-					{currentAppState === EnumCurrentAppState.UPLOADING ? '上傳中，請稍後... ' : currentAppState === EnumCurrentAppState.INIT ? '初始化連接 IPFS ... ' : `上傳至 `}
+					{currentAppState === EnumCurrentAppState.UPLOADING
+						? '上傳中，請稍後... '
+						: currentAppState === EnumCurrentAppState.INIT ? '初始化連接 IPFS ... ' : `上傳至 `}
 					{ipfsServer || 'Unknown IPFS Server'}
 				</button>
 			</div>
 
 			<MainCid lastCid={lastCid} ipfsGatewayList={ipfsGatewayList} currentAppState={currentAppState} files={files} />
 
-			<PanelTools/>
+			<PanelTools />
 
 			<div>
 				<h4>檔案列表</h4>
@@ -375,16 +371,35 @@ export default ({
 						maxHeight: 300,
 					}}
 				>
-				<MyFileList
-					files={files}
-					ipfsGatewayMain={ipfsGatewayMain}
-					ipfsGatewayList={ipfsGatewayList}
-				/>
+					<MyFileList
+						files={files}
+						ipfsGatewayMain={ipfsGatewayMain}
+						ipfsGatewayList={ipfsGatewayList}
+					/>
 				</div>
 			</div>
 
 			<style jsx>{`
-			aside { max-width: 300px; }
+
+aside { max-width: 300px; }
+
+.drop_inner_body
+{
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	border-width: 10px;
+	border-radius: 5px;
+	border-color: #eeeeee;
+	border-style: dashed;
+	background-color: #fafafa;
+	color: #bdbdbd;
+	outline: none;
+	transition: border .24s ease-in-out;
+}
+
 			`}</style>
 		</section>
 	);

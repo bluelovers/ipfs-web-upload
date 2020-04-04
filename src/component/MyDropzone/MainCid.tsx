@@ -1,8 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 import ALinkCid, { IALinkCidProps } from './ALinkCid';
-import { EnumCurrentAppState } from '../MyDropzone';
 import { IFileWithPathWithCid } from './MyFileList';
 import styles from './MainCid.module.scss';
+import { EnumCurrentAppState } from '../../lib/const';
 
 const ALinkCidMain = ({
 	cid,
