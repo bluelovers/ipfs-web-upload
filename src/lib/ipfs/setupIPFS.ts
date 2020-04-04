@@ -11,6 +11,7 @@ import {
 	IIPFSClientAddresses,
 } from '@bluelovers/ipfs-http-client/lib/types';
 import { ipfsApiAddresses } from 'ipfs-util-lib';
+import ipfsApiType from 'ipfs-api-type';
 
 declare global
 {
@@ -28,7 +29,7 @@ export function setupIPFS(serverList: (IIPFSClientAddresses | any)[])
 		.then(async (ipfs: IIPFSPromiseApi) =>
 		{
 
-			const { id: ipfsID } = await ipfs.id()
+			const { id: ipfsID, ...rest } = await ipfs.id()
 				.catch(e =>
 				{
 
@@ -40,11 +41,13 @@ export function setupIPFS(serverList: (IIPFSClientAddresses | any)[])
 				})
 			;
 
+			const ipfsType = await ipfsApiType(ipfs);
+
 			const ipfsAddresses: string = await ipfsApiAddresses(ipfs)
 				.catch(e => console.error(`沒有權限取得 IPFS 伺服器位址`, e) as any)
 			;
 
-			console.info(`成功連接 IPFS API 伺服器`, ipfsAddresses, ipfsID);
+			console.info(`成功連接 IPFS API 伺服器`, ipfsType, ipfsAddresses, ipfsID);
 
 			await tweakIPFSConfig(ipfs);
 
@@ -52,6 +55,7 @@ export function setupIPFS(serverList: (IIPFSClientAddresses | any)[])
 				ipfs,
 				ipfsID,
 				ipfsAddresses,
+				ipfsType,
 			}
 		})
 }
