@@ -14,6 +14,8 @@ import setupIPFS from '../lib/ipfs/setupIPFS';
 import { chunkSize, EnumCurrentAppState } from '../lib/const';
 import { unsubscribeAll } from 'ipfs-util-lib/lib/ipfs/pubsub/unsubscribe';
 import connectPubsub from '../lib/ipfs/connectPubsub';
+import prettyBytes from 'pretty-bytes';
+import getTotalSize from '../lib/MyDropzone/getTotalSize';
 
 const activeStyle = {
 	borderColor: '#2196f3',
@@ -318,7 +320,7 @@ export default ({
 							<p>將檔案拖放到此處，或單擊以選擇檔案</p>
 					}
 					{
-						files.length ? (<p>總計 {files.length} 個檔案</p>) : undefined
+						files.length ? (<p>總計 {files.length} 個檔案 {prettyBytes(getTotalSize(files))}</p>) : undefined
 					}
 					<p
 						style={{
