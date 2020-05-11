@@ -17,7 +17,7 @@ declare global
 {
 	interface Window
 	{
-		ipfs: IIPFSPromiseApi;
+		ipfs?: IIPFSPromiseApi;
 	}
 }
 

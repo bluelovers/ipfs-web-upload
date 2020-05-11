@@ -16,6 +16,7 @@ import { unsubscribeAll } from 'ipfs-util-lib/lib/ipfs/pubsub/unsubscribe';
 import connectPubsub from '../lib/ipfs/connectPubsub';
 import prettyBytes from 'pretty-bytes';
 import getTotalSize from '../lib/MyDropzone/getTotalSize';
+import { detectIpfsCompanionSync, detectIpfsWindowSync } from '@lazy-ipfs/detect-ipfs-companion';
 
 const activeStyle = {
 	borderColor: '#2196f3',
@@ -88,6 +89,7 @@ export default ({
 		console.info(`搜尋可用的 IPFS API 伺服器...`);
 
 		setupIPFS([
+			detectIpfsCompanionSync()?.ipfs,
 			...getDefaultServerList()
 				.map(url =>
 				{
@@ -97,8 +99,7 @@ export default ({
 //			{
 //				url: `https://cors-anywhere.herokuapp.com/https://ipfs.infura.io:5001/api/v0/`,
 //			} as any,
-			// @ts-ignore
-			typeof window !== 'undefined' ? window.ipfs : void 0,
+			detectIpfsWindowSync()?.ipfs,
 			...serverList,
 		])
 			.then(async ({
@@ -117,11 +118,12 @@ export default ({
 				return connectPubsub(ipfs)
 					.then((ret) => fnList.push(ret?.unsubscribe))
 					.catch(e => console.warn(`嘗試連接 Pubsub 節點 失敗`, e))
-				;
+					;
 			})
 		;
 
-		return async () => {
+		return async () =>
+		{
 			console.debug(`[useEffect:ipfs]`);
 			for (const fn of fnList)
 			{
@@ -129,7 +131,8 @@ export default ({
 				{
 					await fn().catch(e => null)
 				}
-				catch (e){}
+				catch (e)
+				{}
 			}
 		}
 	}, []);
@@ -326,7 +329,7 @@ export default ({
 						style={{
 							color: 'red',
 						}}
-					>請注意：一旦上傳完成後，您便無法主動刪除檔案</p>
+					>請注意：一旦上傳完成後，您便無法主動刪除檔案，檔案存活時間取決於是否有人瀏覽。</p>
 				</div>
 			</div>
 
