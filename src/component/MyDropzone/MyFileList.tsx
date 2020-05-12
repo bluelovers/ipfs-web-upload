@@ -47,6 +47,8 @@ const MyFile = ({
 
 		urls.unshift(new URL(url1.href));
 
+		urls.push(new URL(`ipfs://${file.cid}`));
+
 		ipfsGatewayList
 			.forEach(ipfs =>
 			{

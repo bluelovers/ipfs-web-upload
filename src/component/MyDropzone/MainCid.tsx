@@ -3,6 +3,8 @@ import ALinkCid, { IALinkCidProps } from './ALinkCid';
 import { IFileWithPathWithCid } from './MyFileList';
 import styles from './MainCid.module.scss';
 import { EnumCurrentAppState } from '../../lib/const';
+import ALink from '../ALink';
+import ALinkPoke from './ALinkPoke';
 
 const ALinkCidMain = ({
 	cid,
@@ -44,7 +46,22 @@ export default ({
 	const showCids = () => {
 		if (lastCid && ipfsGatewayList.length)
 		{
+			const ipfs_url = new URL(`ipfs://${lastCid}`).href
+
 			return <ol>
+				<li>
+					<ALinkPoke
+						href={ipfs_url}
+						style={{
+							color: '#6acad1',
+							wordBreak: 'break-all',
+							wordWrap: 'break-word',
+						}}
+						title={`此連結需要環境支援才能開啟`}
+					>
+						{ipfs_url}
+					</ALinkPoke>
+				</li>
 				{ipfsGatewayList.map((gateway, index) => {
 					return (<li
 						style={{
