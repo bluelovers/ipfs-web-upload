@@ -111,6 +111,16 @@ export default ({
 				fnList.push(() => unsubscribeAll(ipfs))
 
 				setIpfs(() => ipfs);
+
+				if (ipfs === detectIpfsCompanionSync()?.ipfs)
+				{
+					ipfsAddresses = 'IpfsCompanion';
+				}
+				else if (ipfs === detectIpfsWindowSync()?.ipfs)
+				{
+					ipfsAddresses = 'window.ipfs';
+				}
+
 				setIpfsServer(() => ipfsAddresses);
 				setIpfsID(() => ipfsID);
 				setCurrentAppState(() => EnumCurrentAppState.READY);
