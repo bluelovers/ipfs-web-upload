@@ -118,6 +118,7 @@ export default function ({
 			{
 				// @ts-ignore
 				let value = result[0].value || result[0].reason.value;
+				// @ts-ignore
 				if (value.length)
 				{
 					err = result;
