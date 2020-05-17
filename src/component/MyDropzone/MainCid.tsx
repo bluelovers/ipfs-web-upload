@@ -5,6 +5,9 @@ import styles from './MainCid.module.scss';
 import { EnumCurrentAppState } from '../../lib/const';
 import ALink from '../ALink';
 import ALinkPoke from './ALinkPoke';
+import ipfsProtocol from '@lazy-ipfs/ipfs-protocol';
+import { filterList } from 'ipfs-server-list';
+import ipfsSubdomain from '@lazy-ipfs/ipfs-subdomain';
 
 const ALinkCidMain = ({
 	cid,
@@ -46,7 +49,7 @@ export default ({
 	const showCids = () => {
 		if (lastCid && ipfsGatewayList.length)
 		{
-			const ipfs_url = new URL(`ipfs://${lastCid}`).href
+			const ipfs_url = ipfsProtocol(lastCid);
 
 			return <ol>
 				<li>
@@ -75,6 +78,24 @@ export default ({
 							index={index}
 							key={index}
 						></ALinkCidMain>
+					</li>)
+				})}
+				{filterList('GatewayDomain').map((gateway, index) => {
+					return (<li
+						style={{
+							marginBottom: 5,
+						}}
+						key={index}
+					>
+						<ALinkPoke
+							style={{
+								color: index > 3 ? '#e600ff' : '#ff008c',
+								wordBreak: 'break-all',
+								wordWrap: 'break-word',
+							}}
+							key={index}
+							href={ipfsSubdomain(lastCid, gateway)}
+						></ALinkPoke>
 					</li>)
 				})}
 			</ol>

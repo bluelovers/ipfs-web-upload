@@ -5,6 +5,7 @@ import { toURL as toIpfsURL } from 'to-ipfs-url';
 import { array_unique_overwrite } from 'array-hyper-unique';
 import ALink from '../ALink';
 import ALinkPoke from './ALinkPoke';
+import ipfsProtocol, { ipfsProtocolURL } from '@lazy-ipfs/ipfs-protocol';
 
 export interface IFileWithPathWithCid extends FileWithPath
 {
@@ -47,7 +48,7 @@ const MyFile = ({
 
 		urls.unshift(new URL(url1.href));
 
-		urls.push(new URL(`ipfs://${file.cid}`));
+		urls.push(ipfsProtocolURL(file.cid));
 
 		ipfsGatewayList
 			.forEach(ipfs =>
