@@ -26,6 +26,7 @@ export default useIPFS()
 			options: {
 				pin: true,
 				//progress: createProgressBar,
+				wrapWithDirectory: false,
 			},
 			globSourceOptions: {
 				hidden: true,
