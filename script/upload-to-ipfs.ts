@@ -52,7 +52,7 @@ export default useIPFS()
 
 				return pokeURL(href, {
 					//cors: true,
-					timeout: 60 * 1000,
+					timeout: 10 * 60 * 1000,
 				})
 					.then((response) => {
 						console.info(response.value, href)

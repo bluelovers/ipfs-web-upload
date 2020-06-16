@@ -29,3 +29,14 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 /.idea/
+/.browserslistrc
+/.eslintignore
+/.eslintrc.json.tpl
+/.mocharc.yml
+/.nowignore
+/.npmignore
+/.nvmrc
+/.nycrc
+/jest.config.js
+/lerna.json.tpl
+/tsconfig.esm.json.tpl
