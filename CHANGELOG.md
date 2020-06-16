@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0](https://github.com/bluelovers/ipfs-web-upload/compare/ipfs-web-upload@0.1.0...ipfs-web-upload@0.1.0) (2020-06-16)
+
+
+### 🐛　Bug Fixes
+
+*  try use ignoreBuildErrors ([3dcb72f](https://github.com/bluelovers/ipfs-web-upload/commit/3dcb72f68014772be17979564b8ae307d36f3b66))
+
+
+
+
+
 # 0.1.0 (2020-06-16)
 
 
