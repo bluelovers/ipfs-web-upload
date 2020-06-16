@@ -14,4 +14,9 @@ module.exports = chain([
 
 	assetPrefix: '.',
 
+	typescript: {
+		//ignoreDevErrors: true,
+		ignoreBuildErrors: true,
+	},
+
 });
