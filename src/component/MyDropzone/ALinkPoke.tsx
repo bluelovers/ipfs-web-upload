@@ -16,6 +16,7 @@ export default ({
 
 		pokeURL(href, {
 			cors: true,
+			timeout: 60 * 1000,
 		})
 			.then(ret =>
 			{
