@@ -9,3 +9,4 @@ https://github.com/bluelovers/ipfs-web-upload/tree/master
 
 https://ipfs.fleek.co/ipfs/QmX9xvbS94wfviGC3G5DHChC3vhGJrkgYMXt2xHZTf9mhg/
 
+https://ipfs.io/ipns/ipfs-web-upload.on.fleek.co/
