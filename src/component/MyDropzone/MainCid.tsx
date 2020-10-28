@@ -133,7 +133,12 @@ export default ({
 			}}
 		>
 			<div className={styles.main_cid_inner}>
-			<p>請注意：當上傳大約 20 MB 以上檔案時，如果接收者沒有安裝 IPFS 的話，則需要花費一定程度以上時間伺服器才能找到檔案</p>
+			<p>請注意：當上傳大約 20 MB 以上檔案時，如果接收者沒有安裝 IPFS 的話，則需要花費一定程度以上時間伺服器才能找到檔案，或者可改用 <ALink
+				href="https://share.ipfs.io/"
+				style={{
+					color: '#6acad1',
+				}}
+			>share.ipfs.io</ALink> 來上傳大檔案。</p>
 			{currentAppState === EnumCurrentAppState.FAIL ? (<>
 
 				<p style={{
