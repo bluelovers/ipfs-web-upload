@@ -51,6 +51,8 @@ export default ({
 		{
 			const ipfs_url = ipfsProtocol(lastCid);
 
+			const ipfs_share_url = `https://share.ipfs.io/#/${lastCid}`;
+
 			return <ol>
 				<li>
 					<ALinkPoke
@@ -63,6 +65,19 @@ export default ({
 						title={`此連結需要環境支援才能開啟`}
 					>
 						{ipfs_url}
+					</ALinkPoke>
+				</li>
+				<li>
+					<ALinkPoke
+						href={ipfs_share_url}
+						style={{
+							color: '#6acad1',
+							wordBreak: 'break-all',
+							wordWrap: 'break-word',
+						}}
+						title={`share.ipfs.io`}
+					>
+						{ipfs_share_url}
 					</ALinkPoke>
 				</li>
 				{ipfsGatewayList.map((gateway, index) => {
