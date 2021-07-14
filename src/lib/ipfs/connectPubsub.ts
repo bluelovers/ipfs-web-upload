@@ -5,6 +5,7 @@ import { unsubscribeAll } from 'ipfs-util-lib/lib/ipfs/pubsub/unsubscribe';
 import Bluebird from 'bluebird';
 import { parse, stringify } from '@lazy-ipfs/buffer-json';
 import { cid as isCID } from 'is-ipfs';
+import { IPFS } from 'ipfs-core-types';
 
 const EPUB_TOPIC = 'novel-opds-now';
 
@@ -23,7 +24,7 @@ export async function connectPubsub(ipfs: IIPFSPromiseApi, options?: {
 
 	console.info(`嘗試連接 Pubsub 節點`);
 
-	await ipfs
+	await (ipfs as IPFS)
 		.pubsub
 		.subscribe(EPUB_TOPIC, pubsubHandlerFn)
 	;
@@ -50,7 +51,7 @@ export async function connectPubsub(ipfs: IIPFSPromiseApi, options?: {
 export function connectPeersAll(ipfs: IIPFSPromiseApi, ipfsID: string)
 {
 	return Bluebird
-		.each(getPeers(ipfs), async (peerID) =>
+		.each(getPeers(ipfs as any), async (peerID) =>
 		{
 			return connectPeers(ipfs, peerID, ipfsID)
 		})
