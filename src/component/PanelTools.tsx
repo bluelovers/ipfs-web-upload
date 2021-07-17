@@ -16,7 +16,7 @@ export default (prop: PropsWithChildren<{}>) =>
 			style={{
 				color: '#70b1e6',
 			}}
-			href={'https://ipfs.io/ipfs/QmNdkGvnFv84NMkQQzJiT9cdkVhdE6iBMyaajFjPUe2rU2?filename=IPFS-Desktop-Setup-0.10.4.exe'}
+			href={'https://share.ipfs.io/#/QmbEsbTArGAS1DHxrdCvZMGumP7DSwuxCauuytpDDGarMR'}
 			target="_blank"
 		>windows</ALink>
 		</p>
@@ -27,5 +27,19 @@ export default (prop: PropsWithChildren<{}>) =>
 			href={'https://github.com/ipfs-shipyard/ipfs-companion#ipfs-companion'}
 			target="_blank"
 		>IPFS Companion</ALink></p>
+		<p><ALink
+			style={{
+				color: '#70b1e6',
+			}}
+			href={'https://brave.com/zh/'}
+			target="_blank"
+		>Brave 瀏覽器</ALink></p>
+		<p><ALink
+			style={{
+				color: '#70b1e6',
+			}}
+			href={'https://play.google.com/store/apps/details?id=com.opera.browser'}
+			target="_blank"
+		>Opera 瀏覽器 Android</ALink></p>
 	</div>)
 }
